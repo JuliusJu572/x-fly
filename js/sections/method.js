@@ -1,8 +1,9 @@
-// Method: the paper's Fig. 3 with one card per block (§3.2, App. A.2), plus the original
-// paper figures in a dialog. Card text paraphrases the paper only.
+// Method: block texts for the interactive backbone diagram (§3.2, App. A.2), plus the
+// original paper figures in a dialog. All text paraphrases the paper only.
 import { h, mount, $ } from '../lib/dom.js';
 import { config as C } from '../data/paper.js';
 import { t, asset } from '../lib/i18n.js';
+import { renderArch } from './arch.js';
 
 const NODES = [
   { id: 'instr', t: t('Instruction', '指令'), sub: t('free-form text', '自由文本'), g: 'slow',
@@ -47,18 +48,10 @@ const GROUPS = [
 const byId = Object.fromEntries(NODES.map((n) => [n.id, n]));
 
 export function renderMethod() {
-  // The paper's own Fig. 3 is the diagram; the cards below paraphrase each block from §3.2 / App. A.2.
+  // Interactive redraw of Fig. 3 (arch.js); the paper's own figure stays one click away.
   const host = mount('arch');
-  const fig = h('button', { type: 'button', class: 'arch__fig', 'data-figure': 'model_architecture',
-    'aria-label': t('Enlarge Fig. 3, the policy backbone', '放大图 3：策略骨干') },
-  h('img', { src: asset('model_architecture.webp'), alt: t('Fig. 3 of the paper: the X-Fly policy backbone with slow VLM path, fast visual-tower path, fusion, rectified-flow controller and STOP head.',
-    '论文图 3：X-Fly 策略骨干，包括慢路径 VLM、快路径视觉塔、融合层、rectified-flow 控制器与 STOP 头。'), width: 2000, height: 800, loading: 'lazy' }));
-  const card = (n) => h('div', { class: `arch-card arch-card--${n.g}${n.frozen ? ' is-frozen' : ''}` },
-    h('p', { class: 'arch-card__t' }, n.t, n.frozen ? h('span', { class: 'arch-card__f' }, t('frozen', '冻结')) : null),
-    h('p', { class: 'arch-card__s' }, n.sub), h('p', { class: 'arch-card__d' }, n.d));
-  const groups = h('div', { class: 'arch__groups' }, GROUPS.map(([title, ids]) => h('section', { class: 'arch__group' },
-    h('h4', { class: 'arch__gt' }, title), h('div', { class: 'arch__cards', 'data-n': ids.length }, ids.map((id) => card(byId[id]))))));
-  host.append(fig, groups);
+  const controls = renderArch(host, NODES, GROUPS);
+  host.closest('.arch').querySelector('.arch__head').append(controls);
 
   // Captions paraphrase the paper's own figure captions.
   const FIGS = {

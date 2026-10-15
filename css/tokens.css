@@ -27,6 +27,7 @@
   --neg: #B7791F;
 
   --magenta-ink: #A3125F;
+  --amber-ink: #8A5A12;
   --tint-learner: rgba(194, 24, 122, 0.08);
   --tint-expert: rgba(47, 91, 211, 0.08);
 
@@ -46,4 +47,5 @@
 :root:lang(zh) {
   --f-display: 'Archivo', 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
   --f-body: 'Archivo', 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', 'Microsoft YaHei', system-ui, sans-serif;
+  --f-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
 }
