@@ -47,7 +47,7 @@ function noiseLab(host) {
     lines.replaceChildren(...draws.map((v, k) => s('path', {
       d: v.map((y, i) => `${i ? 'L' : 'M'}${X(i).toFixed(1)} ${Y(Math.max(-yMax, Math.min(yMax, y))).toFixed(1)}`).join(''),
       class: `nz-line nz-line--${mode}`, style: `animation-delay:${k * 40}ms` })));
-    readout.textContent = t(`Step s = ${step}: σ = ${fmt(C.sigma(step), 3)}, ν = σ√Δt = ${fmt(n, 4)}. `, `第 s = ${step} 步：σ = ${fmt(C.sigma(step), 3)}，ν = σ√Δt = ${fmt(n, 4)}。`) + (mode === 'shaped'
+    readout.textContent = t(`Step s = ${step}: σ = ${fmt(C.sigma(step), 3)}, ν = σ√Δt = ${fmt(n, 4)}. `, `当 s = ${step} 时：σ = ${fmt(C.sigma(step), 3)}，ν = σ√Δt = ${fmt(n, 4)}。`) + (mode === 'shaped'
       ? t(`Shaped: 4 low-frequency cosine modes at full scale, the other 4 at ρ = ${rho}. The covariance stays full rank, so each transition has a closed-form log-density over the whole 8 × 4 chunk.`,
         `成形噪声：4 个低频余弦模态取全尺度，其余 4 个乘 ρ = ${rho}。协方差保持满秩，因此每次转移在整个 8 × 4 chunk 上都有闭式对数密度。`)
       : t('Isotropic comparison with the same total variance: waypoints move independently. X-Fly does not use this. It is here for contrast.', '同总方差的各向同性噪声对照：各航点独立抖动。X-Fly 不用它，这里仅作对比。'));
@@ -115,7 +115,7 @@ function groupLab(host) {
       h('span', { class: 'dir' }, t('Select an attempt to change its outcome', '点击某次尝试可切换其结果'))),
     h('div', { class: 'grp__hdr', 'aria-hidden': 'true' }, h('span', {}, t('Outcome', '结果')), h('span', {}, 'R'), h('span', {}, t('advantage A', '优势 A')), h('span', {})),
     list, stats,
-    h('p', { class: 'widget__note' }, t('Simplified. Returns use only the outcome terms of Eq. 5 (STOP in region +20, first entry +2, leaving −1.5, non-STOP failure −10, κ = 4.51). Progress and control shaping, per-depth return-to-go and depth pooling are omitted. A real group holds six free attempts and two STOP-override attempts; override returns enter μ and s, but their decisions get no policy gradient. §3.4, pp. 4–5.', '简化版：回报只保留式 5 的结果项（区域内 STOP +20，首次进入 +2，离开 −1.5，非 STOP 失败 −10，κ = 4.51），省略进度与控制塑形、逐深度 return-to-go 与深度合并。真实的组包含 6 次自由尝试和 2 次 STOP-override 尝试；override 的回报参与 μ 与 s，但其决策不接收策略梯度。§3.4，第 4–5 页。')));
+    h('p', { class: 'widget__note' }, t('Simplified. Returns use only the outcome terms of Eq. 5 (STOP in region +20, first entry +2, leaving −1.5, non-STOP failure −10, κ = 4.51). Progress and control shaping, per-depth return-to-go and depth pooling are omitted. A real group holds six free attempts and two STOP-override attempts; override returns enter μ and s, but their decisions get no policy gradient. §3.4, pp. 4–5.', '简化版：回报只保留式 5 的结果项（区域内 STOP +20，首次进入 +2，离开 −1.5，非 STOP 失败 −10，κ = 4.51），省略进度与控制塑形、逐深度 return-to-go 与深度合并。实际训练时，每组包含 6 次自由尝试和 2 次 STOP-override 尝试；override 的回报参与 μ 与 s，但其决策不接收策略梯度。§3.4，第 4–5 页。')));
   draw();
 }
 

@@ -15,10 +15,10 @@ export function renderLimits() {
       h('span', { class: 'dir' }, t('X-Fly (full), k = 8', 'X-Fly（完整），k = 8'))),
     attr.legend(),
     attr.bars([{ id: 'grpo8', split: 'seen', label: 'test-seen', sub: '' }, { id: 'grpo8', split: 'unseen', label: 'test-unseen', sub: '' }], { bracket: true }),
-    h('p', { class: 'widget__note' }, t(`The bracket marks anchor reach: with STOP disabled, some decision anchor lies inside the 20 m region `
+    h('p', { class: 'widget__note', html: t(`The bracket marks anchor reach: with STOP disabled, some decision anchor lies inside the 20 m region `
       + `(${fmt(reach.anchor.seen)}% seen, ${fmt(reach.anchor.unseen)}% unseen). Of the ${fmt(100 - value('grpo8', 'unseen', 'SR'))} failed points on test-unseen, `
       + `${fmt(term('unseen'))} are termination and ${fmt(share('grpo8', 'unseen', 'nav'))} navigation.`,
-      `括号标出锚点到达率：禁用 STOP 时，有决策锚点落在 20 m 区域内的比例（seen ${fmt(reach.anchor.seen)}%，unseen ${fmt(reach.anchor.unseen)}%）。test-unseen 上失败的 ${fmt(100 - value('grpo8', 'unseen', 'SR'))} 个百分点中，`
-      + `${fmt(term('unseen'))} 来自停止时机，${fmt(share('grpo8', 'unseen', 'nav'))} 来自导航。`)),
+      `括号标出锚点到达率：禁用 STOP 时，有决策锚点落在 20 m 区域内的比例（seen ${fmt(reach.anchor.seen)}%，unseen ${fmt(reach.anchor.unseen)}%）。<span class="nw">test-unseen</span> 上 ${fmt(100 - value('grpo8', 'unseen', 'SR'))}% 的失败率中，`
+      + `${fmt(term('unseen'))} 个百分点来自停止时机，${fmt(share('grpo8', 'unseen', 'nav'))} 个百分点来自导航。`) }),
     h('p', { class: 'widget__note' }, t(`Source: ${reach.src} · ${failure.src}`, `来源：${reach.src} · ${failure.src}`)));
 }

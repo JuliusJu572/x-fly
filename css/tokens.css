@@ -1,6 +1,6 @@
 /* Design tokens. Palette is drawn from aeronautical sectional charts, set on white:
    navy ink, airway blue for the expert route, and the magenta those charts reserve
-   for flight-relevant boundaries, used here for the learner and the final XFly result.
+   for flight-relevant boundaries, used here for the learner and the final X-Fly result.
    Chart hues validated with the dataviz validator against the white surface. */
 :root {
   --paper: #FFFFFF;

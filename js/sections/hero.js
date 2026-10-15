@@ -145,7 +145,7 @@ export function renderHero() {
   const legend = h('div', { class: 'legend plate__legend' },
     [['var(--expert)', t('Expert route', '专家航线')], ['var(--muted-mark)', t('Full-chunk BC: drifts, passes the goal, no STOP', '整块执行 BC：漂移、飞过目标、不停')], ['var(--learner)', t('Recovery-trained X-Fly', 'Recovery 训练后的 X-Fly')]]
       .map(([c, t]) => h('span', {}, h('i', { class: 'sw sw--line', style: { background: c } }), t)),
-    h('span', {}, h('i', { class: 'sw sw--anchor' }), t('Decision anchor, then 8 controls', '决策锚点，随后 8 个控制')));
+    h('span', {}, h('i', { class: 'sw sw--anchor' }), t('Decision anchor, then 8 controls', '决策锚点，随后 8 步控制')));
   host.append(svg, legend);
 
   if (reducedMotion()) return;

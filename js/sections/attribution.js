@@ -19,7 +19,7 @@ export function legend() {
 function tip(id, split) {
   return () => `<b>${nameOf(id)}</b> · test-${split}` +
     tipRows(KINDS.map((k) => [k.label, `${fmt(pctOf(id, split, k.id))}%`])) +
-    `<div class="tip__src">${t('Shares are expectations under the first-stop distribution and sum to 100.', '各项为首次停止分布下的期望，合计 100。')} ${failure.src}</div>`;
+    `<div class="tip__src">${t('Shares are expectations under the first-stop distribution and sum to 100.', '各项为首次停止分布下的期望，合计 100%。')} ${failure.src}</div>`;
 }
 
 // rows: [{ id, split, label?, sub? }]. opts.bracket draws the anchor-reach span

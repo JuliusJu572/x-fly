@@ -78,7 +78,7 @@ export function renderDemos() {
     h('div', { class: 'demo__stage' },
       h('div', { class: 'demo__screen' }, video,
         h('div', { class: 'demo__panes', 'aria-hidden': 'true' },
-          h('span', {}, t('Expert view (GT)', '专家视角 (GT)')), h('span', {}, t('XFly view (PRED)', 'XFly 视角 (PRED)')), h('span', {}, t('Top-down GT vs PRED', '俯视 GT 与 PRED')))),
+          h('span', {}, t('Expert view (GT)', '专家视角 (GT)')), h('span', {}, t('X-Fly view (PRED)', 'X-Fly 视角 (PRED)')), h('span', {}, t('Top-down GT vs PRED', '俯视 GT 与 PRED')))),
       h('div', { class: 'demo__side' }, h('div', { class: 'demo__head' }, title, toggle), meta,
         h('p', { class: 'demo__label' }, t('Instruction, verbatim from OpenFly', '指令原文（OpenFly，英文）')), instr)),
     h('div', { class: 'demo__thumbs', role: 'group', 'aria-label': t('Choose a rollout', '选择示例') }, thumbs));

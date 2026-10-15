@@ -19,15 +19,15 @@ function findings() {
   const F = [
     { v: d('bc8', 'dag8', 'seen'), u: 'pp',
       what: t(`SR from Recovery DAgger under full-chunk execution, test-seen (${fmt(value('bc8', 'seen', 'SR'))} → ${fmt(value('dag8', 'seen', 'SR'))}%). Test-unseen: ${dtxt(d('bc8', 'dag8', 'unseen'), 'SR')} (${fmt(value('bc8', 'unseen', 'SR'))} → ${fmt(value('dag8', 'unseen', 'SR'))}%).`,
-        `整块执行下 Recovery DAgger 带来的 SR 提升，test-seen（${fmt(value('bc8', 'seen', 'SR'))} → ${fmt(value('dag8', 'seen', 'SR'))}%）。test-unseen：${dtxt(d('bc8', 'dag8', 'unseen'), 'SR')}（${fmt(value('bc8', 'unseen', 'SR'))} → ${fmt(value('dag8', 'unseen', 'SR'))}%）。`),
+        `k = 8 整块执行下，Recovery DAgger 使 test-seen 的 SR 由 ${fmt(value('bc8', 'seen', 'SR'))}% 升至 ${fmt(value('dag8', 'seen', 'SR'))}%，test-unseen 由 ${fmt(value('bc8', 'unseen', 'SR'))}% 升至 ${fmt(value('dag8', 'unseen', 'SR'))}%（${dtxt(d('bc8', 'dag8', 'unseen'), 'SR')}）。`),
       src: t('Table 1, p. 6 · §4.2', '表 1，第 6 页 · §4.2') },
     { v: d('dag8', 'grpo8', 'seen'), u: 'pp',
       what: t(`SR from Flow-GRPO over the matched k = 8 recovery policy, test-seen. Test-unseen: ${dtxt(d('dag8', 'grpo8', 'unseen'), 'SR')}. Early stops fall ${fmt(share('dag8', 'seen', 'early'))} → ${fmt(share('grpo8', 'seen', 'early'))}% (seen) and ${fmt(share('dag8', 'unseen', 'early'))} → ${fmt(share('grpo8', 'unseen', 'early'))}% (unseen).`,
-        `Flow-GRPO 在同为 k = 8 的 recovery 策略之上带来的 SR 提升，test-seen。test-unseen：${dtxt(d('dag8', 'grpo8', 'unseen'), 'SR')}。过早停止从 ${fmt(share('dag8', 'seen', 'early'))} → ${fmt(share('grpo8', 'seen', 'early'))}%（seen）、${fmt(share('dag8', 'unseen', 'early'))} → ${fmt(share('grpo8', 'unseen', 'early'))}%（unseen）。`),
+        `在 k = 8 的 Recovery 策略基础上，Flow-GRPO 使 test-seen 的 SR 提升 ${fmt(d('dag8', 'grpo8', 'seen'))} pp，test-unseen 提升 ${fmt(d('dag8', 'grpo8', 'unseen'))} pp。过早停止从 ${fmt(share('dag8', 'seen', 'early'))} → ${fmt(share('grpo8', 'seen', 'early'))}%（seen）、${fmt(share('dag8', 'unseen', 'early'))} → ${fmt(share('grpo8', 'unseen', 'early'))}%（unseen）。`),
       src: t('Table 1, p. 6 · Table 3, p. 13 · §4.3', '表 1，第 6 页 · 表 3，第 13 页 · §4.3') },
     { v: ns('dag8', 'seen') - ns('bc8', 'seen'), u: 'pp',
       what: t(`No-stop failures at k = 8 after recovery, test-seen (${fmt(ns('bc8', 'seen'))} → ${fmt(ns('dag8', 'seen'))}% of episodes). Test-unseen: ${fmt(ns('bc8', 'unseen'))} → ${fmt(ns('dag8', 'unseen'))}%. Every success now ends with an explicit STOP.`,
-        `Recovery 之后 k = 8 的“未停止”失败，test-seen（${fmt(ns('bc8', 'seen'))} → ${fmt(ns('dag8', 'seen'))}%）。test-unseen：${fmt(ns('bc8', 'unseen'))} → ${fmt(ns('dag8', 'unseen'))}%。此后每次成功都以显式 STOP 结束。`),
+        `Recovery 使 k = 8 策略的“未停止”失败率在 test-seen 上由 ${fmt(ns('bc8', 'seen'))}% 降至 ${fmt(ns('dag8', 'seen'))}%，在 test-unseen 上由 ${fmt(ns('bc8', 'unseen'))}% 降至 ${fmt(ns('dag8', 'unseen'))}%。此后每次成功都以显式 STOP 结束。`),
       src: t('Table 3, p. 13 · §4.3', '表 3，第 13 页 · §4.3') },
   ];
   const ul = mount('findings');
@@ -204,13 +204,13 @@ function attribution() {
     notes.replaceChildren(
       h('div', {}, h('b', {}, t('Full-chunk BC fails to stop', '整块执行的 BC 停不下来')),
         t(`No-stop ${fmt(S('bc1', 'nostop'))}% at k = 1, ${fmt(S('bc8', 'nostop'))}% at k = 8, while navigation failures go ${fmt(S('bc1', 'nav'))} → ${fmt(S('bc8', 'nav'))}%. ${fmt(S('bc8', 'succns'))} of its ${fmt(value('bc8', split, 'SR'))} SR points end inside the region without STOP.`,
-          `未停止：k = 1 时 ${fmt(S('bc1', 'nostop'))}%，k = 8 时 ${fmt(S('bc8', 'nostop'))}%；导航失败 ${fmt(S('bc1', 'nav'))} → ${fmt(S('bc8', 'nav'))}%。其 ${fmt(value('bc8', split, 'SR'))} 个 SR 点中有 ${fmt(S('bc8', 'succns'))} 个是没发出 STOP、恰好停在区域内。`)),
+          `未停止：k = 1 时 ${fmt(S('bc1', 'nostop'))}%，k = 8 时 ${fmt(S('bc8', 'nostop'))}%；导航失败 ${fmt(S('bc1', 'nav'))} → ${fmt(S('bc8', 'nav'))}%。其 ${fmt(value('bc8', split, 'SR'))}% 的成功率中，${fmt(S('bc8', 'succns'))} 个百分点来自未发出 STOP、恰好停在区域内的情形。`)),
       h('div', {}, h('b', {}, t('Recovery changes both reaching and stopping', 'Recovery 同时改善到达与停止')),
         t(`At k = 8, navigation failures ${fmt(S('bc8', 'nav'))} → ${fmt(S('dag8', 'nav'))}% and no-stop ${fmt(S('bc8', 'nostop'))} → ${fmt(S('dag8', 'nostop'))}%; every success now ends with STOP. Early stops become the largest failure (${fmt(S('dag8', 'early'))}%).`,
           `k = 8 时导航失败 ${fmt(S('bc8', 'nav'))} → ${fmt(S('dag8', 'nav'))}%，未停止 ${fmt(S('bc8', 'nostop'))} → ${fmt(S('dag8', 'nostop'))}%，所有成功都以 STOP 结束。过早停止成为最大的失败类型（${fmt(S('dag8', 'early'))}%）。`)),
       h('div', {}, h('b', {}, t('Flow-GRPO reduces premature stops', 'Flow-GRPO 减少过早停止')),
         t(`Early ${fmt(S('dag8', 'early'))} → ${fmt(S('grpo8', 'early'))}%, navigation ${fmt(S('dag8', 'nav'))} → ${fmt(S('grpo8', 'nav'))}%, late ${fmt(S('dag8', 'late'))} → ${fmt(S('grpo8', 'late'))}%. Termination still accounts for ${fmt(sumTerm('grpo8'))} of the ${fmt(100 - value('grpo8', split, 'SR'))} failed points.`,
-          `过早 ${fmt(S('dag8', 'early'))} → ${fmt(S('grpo8', 'early'))}%，导航 ${fmt(S('dag8', 'nav'))} → ${fmt(S('grpo8', 'nav'))}%，过晚 ${fmt(S('dag8', 'late'))} → ${fmt(S('grpo8', 'late'))}%。失败的 ${fmt(100 - value('grpo8', split, 'SR'))} 个百分点中，仍有 ${fmt(sumTerm('grpo8'))} 来自停止时机。`)));
+          `过早 ${fmt(S('dag8', 'early'))} → ${fmt(S('grpo8', 'early'))}%，导航 ${fmt(S('dag8', 'nav'))} → ${fmt(S('grpo8', 'nav'))}%，过晚 ${fmt(S('dag8', 'late'))} → ${fmt(S('grpo8', 'late'))}%。${fmt(100 - value('grpo8', split, 'SR'))}% 的失败率中，仍有 ${fmt(sumTerm('grpo8'))} 个百分点与停止时机有关。`)));
     host.append(notes);
   }
   draw();

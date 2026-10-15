@@ -143,7 +143,7 @@ export function renderRecovery() {
         ? tr(`Anchor ${kc + 1}, cursor c_t = ${c}: the first anchor inside the success region. It is labeled STOP with a hover target, and collection for this route ends here.`,
           `第 ${kc + 1} 个锚点，游标 c_t = ${c}：第一个进入成功区域的锚点。它被标为 STOP 并配悬停目标，这条航线的采集到此截断。`)
         : tr(`Anchor ${kc + 1}, cursor c_t = ${c}, offset |d_t| = ${off}. The magenta label starts at the learner and reaches expert pose c_t + ${H} exactly (w(1) = 0); the gray line is what the learner actually flies, ${H} controls per decision.`,
-          `第 ${kc + 1} 个锚点，游标 c_t = ${c}，偏移 |d_t| = ${off}。品红色标签从学习者位置出发，恰好到达专家位姿 c_t + ${H}（w(1) = 0）；灰线是学习者实际飞出的轨迹，每次决策执行 ${H} 个控制。`)).replace(/c_t/g, 'c<sub>t</sub>').replace(/d_t/g, 'd<sub>t</sub>');
+          `第 ${kc + 1} 个锚点，游标 c_t = ${c}，偏移 |d_t| = ${off}。品红色标签从学习者位置出发，恰好到达专家位姿 c_t + ${H}（w(1) = 0）；灰线是学习者实际飞出的轨迹，每次决策执行 ${H} 步控制。`)).replace(/c_t/g, 'c<sub>t</sub>').replace(/d_t/g, 'd<sub>t</sub>');
     }
   }
 
@@ -204,7 +204,7 @@ export function renderRecovery() {
     svg,
     h('div', { class: 'lab-legend legend' },
       h('span', {}, h('i', { class: 'sw', style: { background: 'var(--expert)', borderRadius: '50%' } }), tr('Expert poses p*', '专家位姿 p*')),
-      h('span', {}, h('i', { class: 'sw sw--line', style: { background: 'var(--muted-mark)' } }), tr('Learner rollout, one control per dot', '学习者轨迹，每点一个控制')),
+      h('span', {}, h('i', { class: 'sw sw--line', style: { background: 'var(--muted-mark)' } }), tr('Learner rollout, one control per dot', '学习者轨迹，每个点代表一步控制')),
       h('span', {}, h('i', { class: 'sw sw--anchor' }), tr('Decision anchor', '决策锚点')),
       h('span', {}, h('i', { class: 'sw sw--line', style: { background: 'var(--learner)' } }), h('span', { class: 'math', html: tr('Recovery label p<sup>rec</sup>', '恢复标签 p<sup>rec</sup>') }))),
     h('label', { class: 'lab-cursor' }, h('span', {}, tr('Control step', '控制步')), slider),

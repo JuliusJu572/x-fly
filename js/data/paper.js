@@ -5,8 +5,8 @@
 import { t } from '../lib/i18n.js';
 
 export const paper = {
-  name: 'XFly',
-  title: 'XFly: Learning to Reach and Stop in Full-Chunk Aerial Vision-Language Navigation',
+  name: 'X-Fly',
+  title: 'X-Fly: Learning to Reach and Stop in Full-Chunk Aerial Vision-Language Navigation',
   venue: t('arXiv preprint', 'arXiv 预印本'),
   org: 'ARIDGE, XPENG',
 };
@@ -46,15 +46,15 @@ export const table1 = {
       seen: [22.63, 52.73, 20.42, 122.89], unseen: [14.11, 62.38, 12.49, 163.87] },
     { id: 'dreamfly', label: 'DreamFly', k: 1, cite: 'Deng & Xu, arXiv 2026', group: 'prior', stop: NATIVE,
       seen: [32.04, 46.77, 28.22, 44.87], unseen: [29.46, 46.78, 23.54, 45.29] },
-    { id: 'bc1', label: 'XFly BC', k: 1, stage: 'bc', group: 'xfly', stop: BERN,
+    { id: 'bc1', label: 'X-Fly BC', k: 1, stage: 'bc', group: 'xfly', stop: BERN,
       seen: [46.57, 52.85, 39.92, 37.28], unseen: [22.49, 23.46, 21.00, 58.61] },
-    { id: 'bc8', label: 'XFly BC', k: 8, stage: 'bc', group: 'xfly', stop: BERN,
+    { id: 'bc8', label: 'X-Fly BC', k: 8, stage: 'bc', group: 'xfly', stop: BERN,
       seen: [16.45, 67.30, 13.54, 37.87], unseen: [18.43, 43.14, 16.18, 48.12] },
     { id: 'dag1', label: '+ Recovery DAgger', k: 1, stage: 'dagger', group: 'xfly', stop: BERN,
       seen: [68.88, 75.45, 56.84, 20.12], unseen: [44.27, 47.64, 39.96, 36.43] },
     { id: 'dag8', label: '+ Recovery DAgger', k: 8, stage: 'dagger', group: 'xfly', stop: BERN,
       seen: [63.46, 72.87, 54.54, 21.49], unseen: [40.63, 52.71, 36.46, 35.16] },
-    { id: 'grpo8', label: '+ Flow-GRPO (XFly, full)', k: 8, stage: 'grpo', group: 'xfly', stop: BERN,
+    { id: 'grpo8', label: '+ Flow-GRPO (X-Fly, full)', k: 8, stage: 'grpo', group: 'xfly', stop: BERN,
       final: true,
       seen: [74.18, 84.07, 66.34, 17.77], unseen: [51.73, 68.07, 47.03, 29.17] },
   ],

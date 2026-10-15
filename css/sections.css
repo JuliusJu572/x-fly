@@ -217,3 +217,7 @@
   .nav__brand .brand-sep, .nav__brand .brand-org { display: none; }
   .demo__panes span { font-size: 10px; padding: 7px 4px; }
 }
+
+/* zh line breaking: key heading phrases sit in .nw spans; numbers are glued to units in i18n.js. */
+:lang(zh) p { text-wrap: pretty; }
+.nw { white-space: nowrap; }

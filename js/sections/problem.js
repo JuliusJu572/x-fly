@@ -23,7 +23,7 @@ function chunkCost(host) {
     });
     caption.textContent = k === 1
       ? t('k = 1: a fused-policy call (◆) before every waypoint. 16 calls per window.', 'k = 1：每个航点前调用一次融合策略 (◆)，每个窗口 16 次。')
-      : t('k = 8: one fused-policy call (◆), then eight controls with no new visual input. 2 calls per window.', 'k = 8：调用一次融合策略 (◆)，随后连续执行 8 个控制，期间没有新的视觉输入。每个窗口 2 次。');
+      : t('k = 8: one fused-policy call (◆), then eight controls with no new visual input. 2 calls per window.', 'k = 8：调用一次融合策略 (◆)，随后连续执行 8 步控制，期间没有新的视觉输入。每个窗口 2 次。');
   }
   setK(8);
 
@@ -49,7 +49,7 @@ function chunkCost(host) {
     h('div', { class: 'strip__axis', 'aria-hidden': 'true' }, h('span', {}, t('waypoint 1', '航点 1')), h('span', {}, '16')),
     caption,
     h('div', { class: 'legend', style: { marginTop: '18px' } },
-      h('span', {}, h('i', { class: 'sw', style: { background: 'var(--amber)' } }), t('Slow VLM refresh, 0.320 s', '慢路径 VLM 刷新，0.320 s')),
+      h('span', {}, h('i', { class: 'sw', style: { background: 'var(--amber)' } }), t('Slow VLM refresh, 0.320 s', '慢路径 VLM 刷新，0.320 s')),
       h('span', {}, h('i', { class: 'sw', style: { background: 'var(--expert)' } }), t('Visual tower, 0.141 s / call', '视觉塔，0.141 s / 次')),
       h('span', {}, h('i', { class: 'sw', style: { background: 'var(--learner)' } }), t('Fusion + heads, 0.034 s / call', '融合 + 输出头，0.034 s / 次'))),
     h('div', { class: 'cost' }, rows),
