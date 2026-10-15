@@ -1,0 +1,200 @@
+/* ---- hero plate ---- */
+.pl-grid line { stroke: var(--rule); stroke-width: 1; }
+.pl-contour { fill: none; stroke: var(--contour); stroke-width: 1.2; }
+.pl-goal { fill: var(--tint-learner); stroke: var(--learner); stroke-width: 1.5; }
+.pl-expert { fill: none; stroke: var(--expert); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.pl-bc { fill: none; stroke: var(--muted-mark); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.pl-bcx path { stroke: var(--muted-mark); stroke-width: 2; stroke-linecap: round; }
+.pl-learner { fill: none; stroke: var(--learner); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.pl-tick { stroke: var(--learner); stroke-width: 1.4; stroke-linecap: round; opacity: 0.85; }
+.pl-anchor { fill: var(--surface); stroke: var(--ink); stroke-width: 1.6; }
+.pl-stop circle { fill: var(--learner); stroke: var(--surface); stroke-width: 2; }
+.pl-start { fill: var(--ink); }
+.pl-label { font: 500 11px var(--f-mono); fill: var(--ink-3); letter-spacing: 0.02em; }
+.pl-label--ink { fill: var(--ink-2); }
+.pl-legend line { stroke-width: 2.5; }
+
+svg.is-armed .pl-expert, svg.is-armed .pl-bc { stroke-dasharray: 1; stroke-dashoffset: 1; }
+svg.is-armed .pl-bcx, svg.is-armed .pl-stop { opacity: 0; }
+svg.is-armed .pl-chunk { opacity: 0; }
+svg.is-armed .pl-chunk .pl-learner { stroke-dasharray: 1; stroke-dashoffset: 1; }
+svg.is-playing .pl-expert { transition: stroke-dashoffset 1.4s var(--ease); stroke-dashoffset: 0; }
+svg.is-playing .pl-bc { transition: stroke-dashoffset 1.8s var(--ease) 0.6s; stroke-dashoffset: 0; }
+svg.is-playing .pl-bcx { transition: opacity .3s 2.3s; opacity: 1; }
+svg.is-armed .pl-chunk.is-on { opacity: 1; transition: opacity .15s; }
+svg.is-armed .pl-chunk.is-on .pl-learner { stroke-dashoffset: 0; transition: stroke-dashoffset .28s linear; }
+svg.is-armed .pl-stop.is-on { opacity: 1; transition: opacity .3s; }
+
+/* ---- shared chart chrome ---- */
+.axis text, .ax { font: 400 11px var(--f-mono); fill: var(--ink-3); }
+.axis line, .gridline { stroke: var(--rule); stroke-width: 1; }
+.baseline { stroke: var(--rule-2); stroke-width: 1; }
+.dir { font: 500 11px/1 var(--f-mono); color: var(--ink-3); letter-spacing: 0.02em; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font: 400 12px/1.4 var(--f-mono); color: var(--ink-2); margin: 0 0 12px; }
+.legend span { display: inline-flex; align-items: center; gap: 7px; }
+.sw { width: 12px; height: 12px; border-radius: 3px; flex: none; }
+.sw--line { height: 2.5px; width: 18px; border-radius: 2px; }
+.sw--anchor { width: 8px; height: 8px; border-radius: 0; margin: 0 5px 0 3px; transform: rotate(45deg); background: var(--surface); border: 1.6px solid var(--ink); }
+.plate__legend { padding: 4px 16px 12px; margin: 0; }
+/* Plot labels scale with their viewBox; on phones bump them back to ~10px rendered. */
+@media (max-width: 600px) {
+  .plate__svg .pl-label { font-size: 21px; }
+  .lab-svg .pl-label { font-size: 19px; }
+  .lab-svg .lab-dlabel { font-size: 22px; }
+  .lab-svg .axis text { font-size: 19px; }
+}
+
+/* ---- benchmark bars (Table 1) ---- */
+.bars { display: grid; gap: 4px; }
+.bars__group { font: 500 11px/1 var(--f-mono); text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-3); padding: 14px 0 6px; border-bottom: 1px solid var(--rule); margin-bottom: 4px; }
+.bars__group:first-child { padding-top: 0; }
+.bar {
+  display: grid; grid-template-columns: minmax(150px, 230px) minmax(0, 1fr) 64px; align-items: center; gap: 12px;
+  padding: 3px 4px; border-radius: 4px; cursor: default; outline-offset: 1px;
+}
+.bar:hover, .bar:focus-visible { background: var(--band); }
+.bar__label { font-size: 14px; line-height: 1.25; color: var(--ink-2); }
+.bar__label b { font-weight: 600; color: var(--ink); }
+.bar__k { font: 400 12px var(--f-mono); color: var(--ink-3); margin-left: 4px; }
+.bar__track { position: relative; height: 16px; }
+.bar__fill {
+  position: absolute; left: 0; top: 2px; bottom: 2px; width: 0; border-radius: 0 4px 4px 0;
+  background: var(--muted-mark-2); transition: width .9s var(--ease);
+}
+.bar--xfly .bar__fill { background: var(--muted-mark); }
+.bar--ref .bar__fill { background: var(--expert); }
+.bar--final .bar__fill { background: var(--learner); }
+.bar--final .bar__label { color: var(--ink); font-weight: 600; }
+.bar__val { font: 500 13px var(--f-mono); text-align: right; font-variant-numeric: tabular-nums; color: var(--ink-2); }
+.bar--final .bar__val { color: var(--ink); font-weight: 600; }
+.bars__axis { display: grid; grid-template-columns: minmax(150px, 230px) minmax(0, 1fr) 64px; gap: 12px; padding: 6px 4px 0; }
+.bars__ticks { position: relative; height: 16px; border-top: 1px solid var(--rule-2); }
+.bars__ticks span { position: absolute; top: 4px; transform: translateX(-50%); font: 400 11px var(--f-mono); color: var(--ink-3); }
+
+.tbl-wrap { overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; }
+.tbl { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 760px; }
+.tbl th, .tbl td { padding: 8px 10px; text-align: right; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+.tbl th:first-child, .tbl td:first-child { text-align: left; position: sticky; left: 0; background: var(--surface); }
+.tbl thead th { font: 500 12px var(--f-mono); color: var(--ink-3); }
+.tbl td { font-family: var(--f-mono); font-variant-numeric: tabular-nums; font-size: 13px; }
+.tbl td:first-child { font-family: var(--f-body); font-size: 14px; }
+.tbl tr.is-final td { font-weight: 600; color: var(--ink); background: var(--tint-learner); }
+.tbl tr.is-final td:first-child { background: color-mix(in srgb, var(--surface) 92%, var(--learner)); }
+.tbl tr.is-sep td { border-top: 2px solid var(--rule-2); }
+
+/* ---- ladder ---- */
+.ladder svg { width: 100%; height: auto; overflow: visible; }
+.ld-line { fill: none; stroke-width: 2; }
+.ld-dot { stroke: var(--surface); stroke-width: 2; cursor: default; }
+.ld-hit { fill: transparent; cursor: default; }
+.ld-hit:focus-visible { outline: none; stroke: var(--ink); stroke-width: 1.5; }
+.ld-delta { font: 600 12px var(--f-mono); fill: var(--ink); }
+.ld-end { font: 500 12px var(--f-mono); fill: var(--ink-2); }
+.ladder svg.is-compact .ax { font-size: 13.5px; }
+.ladder svg.is-compact .ld-stage, .ladder svg.is-compact .ld-delta, .ladder svg.is-compact .ld-end { font-size: 15px; }
+.ld-stage { font: 500 12px var(--f-body); fill: var(--ink-2); }
+.ld-gap { stroke: var(--ink-3); stroke-width: 1; }
+.ladder__note { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
+.ladder__note div { background: var(--band); border-radius: var(--radius); padding: 12px 14px; font-size: 14px; color: var(--ink-2); }
+.ladder__note b { font: 600 18px var(--f-body); color: var(--ink); display: block; margin-bottom: 2px; }
+
+/* ---- problem widgets ---- */
+.strip { display: grid; grid-template-columns: repeat(16, minmax(0, 1fr)); gap: 3px; margin: 8px 0 6px; }
+.strip i { height: 30px; border-radius: 3px; background: var(--band); position: relative; display: block; }
+.strip i.look { background: var(--expert); }
+.strip i.look::after { content: ''; position: absolute; left: 50%; top: -9px; width: 7px; height: 7px; transform: translateX(-50%) rotate(45deg); background: var(--ink); }
+.strip i.slow { box-shadow: inset 0 -5px 0 var(--amber); }
+.strip__axis { display: flex; justify-content: space-between; font: 400 11px var(--f-mono); color: var(--ink-3); }
+.cost { margin-top: 22px; display: grid; gap: 10px; }
+.cost__row { display: grid; grid-template-columns: 54px minmax(0, 1fr) 104px; gap: 10px; align-items: center; }
+.cost__k { font: 600 13px var(--f-mono); }
+.cost__track { display: flex; gap: 2px; height: 22px; }
+.cost__seg { height: 100%; transition: width .8s var(--ease); width: 0; }
+.cost__seg:last-child { border-radius: 0 4px 4px 0; }
+.cost__seg--slow { background: var(--amber); }
+.cost__seg--vis { background: var(--expert); }
+.cost__seg--fus { background: var(--learner); }
+.cost__val { font: 500 13px var(--f-mono); text-align: right; font-variant-numeric: tabular-nums; }
+.cost__val small { display: block; color: var(--ink-3); font-size: 11px; }
+
+
+/* ---- stop gap ---- */
+
+@media (max-width: 720px) {
+  .bar, .bars__axis { grid-template-columns: minmax(0, 1fr) 58px; gap: 4px 8px; }
+  .bar__label { grid-column: 1 / -1; font-size: 13px; }
+  .bars__axis > :first-child { display: none; }
+  .bars__axis { grid-template-columns: minmax(0, 1fr) 58px; }
+  .ladder__note { grid-template-columns: minmax(0, 1fr); }
+  .cost__row { grid-template-columns: 44px minmax(0, 1fr) 84px; }
+}
+
+/* ---- outcome attribution (Fig. 4 / Table 3) ---- */
+.attr { display: grid; gap: 6px; container-type: inline-size; }
+.attr__row { display: grid; grid-template-columns: minmax(150px, 230px) minmax(0, 1fr) 64px; gap: 12px; align-items: end; padding: 4px; border-radius: 4px; outline-offset: 1px; }
+.attr__row:hover, .attr__row:focus-visible { background: var(--band); }
+.attr__lbl { font-size: 14px; line-height: 1.25; color: var(--ink-2); padding-bottom: 4px; }
+.attr__lbl b { font-weight: 600; color: var(--ink); }
+.attr__row.is-final .attr__lbl { color: var(--ink); }
+.attr__plot { position: relative; }
+.attr__track { display: flex; gap: 2px; height: 26px; }
+.attr__seg { min-width: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; transition: flex-grow .5s var(--ease); }
+.attr__seg:first-child { border-radius: 4px 0 0 4px; }
+.attr__seg:last-child { border-radius: 0 4px 4px 0; }
+.attr__seg[data-v="0"] { display: none; }
+.attr__in { font: 600 11.5px/1 var(--f-mono); font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--seg-ink); }
+.attr__seg.is-tight .attr__in { visibility: hidden; }
+.attr__sr { font: 500 13px var(--f-mono); text-align: right; font-variant-numeric: tabular-nums; color: var(--ink-2); padding-bottom: 6px; }
+.attr__row.is-final .attr__sr { color: var(--ink); font-weight: 600; }
+.attr__bracket { height: 22px; border: 1px solid var(--ink-3); border-bottom: 0; border-radius: 3px 3px 0 0; margin-bottom: 3px; position: relative; }
+.attr__bracket span { position: absolute; left: 6px; top: -9px; padding: 0 6px; background: var(--surface); font: 500 11.5px var(--f-mono); color: var(--ink-2); white-space: nowrap; }
+.attr__legend { margin: 0 0 14px; }
+.attr-seg--succ, .attr-sw--succ { background: var(--learner); --seg-ink: var(--seg-ink-light); }
+.attr-seg--succns, .attr-sw--succns { background: repeating-linear-gradient(135deg, #E9A3C7 0 5px, #F3C9DE 5px 9px); --seg-ink: var(--seg-ink-dark); }
+.attr-seg--early, .attr-sw--early { background: var(--expert); --seg-ink: var(--seg-ink-light); }
+.attr-seg--late, .attr-sw--late { background: var(--teal); --seg-ink: var(--seg-ink-light); }
+.attr-seg--nostop, .attr-sw--nostop { background: var(--violet); --seg-ink: var(--seg-ink-light); }
+.attr-seg--nav, .attr-sw--nav { background: var(--amber); --seg-ink: var(--seg-ink-dark); }
+.attr__head { display: grid; grid-template-columns: minmax(150px, 230px) minmax(0, 1fr) 64px; gap: 12px; padding: 0 4px 6px; font: 500 11px var(--f-mono); color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.04em; }
+.attr__head span:last-child { text-align: right; }
+.attr__group { font: 500 11px/1 var(--f-mono); text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-3); padding: 12px 4px 4px; }
+.attr__notes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
+.attr__notes div { background: var(--band); border-radius: var(--radius); padding: 12px 14px; font-size: 14px; color: var(--ink-2); }
+.attr__notes b { font: 600 15px/1.3 var(--f-body); color: var(--ink); display: block; margin-bottom: 4px; }
+
+/* ---- Flow-GRPO dynamics (Fig. 5) ---- */
+.dyn svg { width: 100%; height: auto; display: block; overflow: visible; }
+.dyn-band { fill: var(--band); }
+.dyn-line { fill: none; stroke-width: 2; stroke-linejoin: round; }
+.dyn-line--da { stroke: var(--learner); }
+.dyn-line--bc { stroke: var(--ink-3); }
+.dyn-init { stroke-width: 1; stroke-dasharray: 4 3; }
+.dyn-init--da { stroke: var(--learner); }
+.dyn-init--bc { stroke: var(--ink-3); }
+.dyn-end { font: 500 12px var(--f-mono); fill: var(--ink-2); }
+.dyn-bandlbl { font: 500 11px var(--f-mono); fill: var(--ink-3); }
+.dyn-cross { stroke: var(--ink-3); stroke-width: 1; }
+.dyn-pt { stroke: var(--surface); stroke-width: 2; }
+.dyn-hit { fill: transparent; cursor: crosshair; outline: none; }
+.dyn-hit:focus-visible { stroke: var(--ink); stroke-width: 1.5; }
+.dyn svg.is-compact .ax, .dyn svg.is-compact .dyn-bandlbl { font-size: 15px; }
+.dyn svg.is-compact .dyn-end { font-size: 16px; }
+
+@media (max-width: 720px) {
+  .attr__row, .attr__head { grid-template-columns: minmax(0, 1fr) 58px; gap: 4px 10px; }
+  .attr__lbl { grid-column: 1 / -1; padding-bottom: 0; }
+  .attr__head span:first-child { display: none; }
+  .attr__notes { grid-template-columns: minmax(0, 1fr); }
+}
+/* Narrow columns (e.g. the Limits widget beside its prose) stack the label too. */
+@container (max-width: 560px) {
+  .attr__row { grid-template-columns: minmax(0, 1fr) 58px; gap: 4px 10px; }
+  .attr__lbl { grid-column: 1 / -1; padding-bottom: 0; }
+}
+
+/* Text halos so annotations stay legible where they cross gridlines or paths. */
+.ld-delta, .ld-end, .dyn-end, .dyn-bandlbl, .lab-svg .pl-label, .lab-dlabel {
+  paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round;
+}
+.dyn-axtitle { font: 500 11px var(--f-mono); fill: var(--ink-3); }
+.dyn svg.is-compact .dyn-axtitle { font-size: 15px; }

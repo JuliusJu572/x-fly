@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>X-Fly: Learning to Reach and Stop in Full-Chunk Aerial Vision-Language Navigation</title>
+<meta name="description" content="X-Fly is a staged training framework for full-chunk aerial vision-language navigation: multi-domain BC, Recovery DAgger at learner-visited anchors, then Flow-GRPO on chunked control and STOP. 74.18% SR on OpenFly test-seen, 51.73% on test-unseen, with eight controls per decision.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="X-Fly: Learning to Reach and Stop in Full-Chunk Aerial VLN">
+<meta property="og:description" content="Staged training for full-chunk aerial VLN. 74.18% / 51.73% SR on OpenFly test-seen / test-unseen at 4.7× less model inference per waypoint.">
+<meta property="og:image" content="https://juliusju572.github.io/x-fly/assets/rollouts/water_tower_140m.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="alternate" hreflang="en" href="https://juliusju572.github.io/x-fly/">
+<link rel="alternate" hreflang="zh" href="https://juliusju572.github.io/x-fly/zh/">
+<link rel="icon" href="assets/brand/aridge_mark.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/sections.css">
+<link rel="stylesheet" href="css/charts.css">
+<link rel="stylesheet" href="css/widgets.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav" id="nav">
+  <a class="nav__brand" href="#top" aria-label="X-Fly, back to top">
+    <svg class="brand-mark" viewBox="0 0 22 37" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><defs><clipPath id="bm-c"><rect x="2" y="2" width="18" height="33"/></clipPath></defs><g clip-path="url(#bm-c)"><path d="M-2.628 41L22.028 -5"/><path d="M24.456 7L13.2 28H24" stroke-linejoin="miter"/></g><rect x="1" y="1" width="20" height="35"/></svg>
+    <span>X-FLY</span><span class="brand-sep" aria-hidden="true"></span><span class="brand-org">ARIDGE · XPENG</span>
+  </a>
+  <nav class="route" aria-label="Sections">
+    <ol>
+      <li><a href="#demos" data-spy="demos"><span class="wp" aria-hidden="true"></span>Demos</a></li>
+      <li><a href="#problem" data-spy="problem"><span class="wp" aria-hidden="true"></span>Problem</a></li>
+      <li><a href="#method" data-spy="method"><span class="wp" aria-hidden="true"></span>Method</a></li>
+      <li><a href="#recovery" data-spy="recovery"><span class="wp" aria-hidden="true"></span>Recovery</a></li>
+      <li><a href="#grpo" data-spy="grpo"><span class="wp" aria-hidden="true"></span>Flow-GRPO</a></li>
+      <li><a href="#results" data-spy="results"><span class="wp" aria-hidden="true"></span>Results</a></li>
+      <li><a href="#limits" data-spy="limits"><span class="wp" aria-hidden="true"></span>Limits</a></li>
+      <li><a href="#team" data-spy="team"><span class="wp" aria-hidden="true"></span>Team</a></li>
+    </ol>
+  </nav>
+  <a class="lang-btn" href="zh/" hreflang="zh" lang="zh" data-lang-link aria-label="切换到中文"><span aria-current="true" lang="en">EN</span><span>中文</span></a>
+</header>
+
+<main id="main">
+<!-- ============ HERO ============ -->
+<section class="hero" id="top" aria-labelledby="hero-title">
+  <div class="wrap hero__grid">
+    <div class="hero__text">
+      <p class="eyebrow">Aerial vision-language navigation · <span data-bind="paper.venue">arXiv preprint</span></p>
+      <h1 id="hero-title" class="display">
+        <span class="display__name">X-Fly</span>
+        <span class="display__title">Learning to Reach and Stop in Full-Chunk Aerial Vision-Language Navigation</span>
+      </h1>
+      <p class="authors"><span>Ruibin Ju<sup>*</sup></span><span>Ruifeng Cai</span><span>Min Xu</span><span>Lin Wang</span></p>
+      <p class="affil"><svg class="brand-mark" viewBox="0 0 22 37" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><defs><clipPath id="bm-c2"><rect x="2" y="2" width="18" height="33"/></clipPath></defs><g clip-path="url(#bm-c2)"><path d="M-2.628 41L22.028 -5"/><path d="M24.456 7L13.2 28H24" stroke-linejoin="miter"/></g><rect x="1" y="1" width="20" height="35"/></svg>ARIDGE · XPENG</p>
+      <div class="hero__cta">
+        <a class="btn btn--solid" href="assets/paper/x-fly.pdf"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 1.5h5.5L13 5v9.5H4z M9.5 1.5V5H13" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>Paper (PDF)</a>
+        <a class="btn" href="#" aria-disabled="true" title="arXiv link will be added on release">arXiv · soon</a>
+        <a class="btn" href="#video">Explainer</a>
+        <a class="btn" href="#demos">Rollouts</a>
+      </div>
+      <p class="lede">Executing all eight predicted controls cuts model inference from 195 to 42 ms per waypoint, but leaves the policy at decision states that expert demonstrations cover poorly. X-Fly trains in three stages: multi-domain BC, Recovery DAgger at learner-visited anchors, and Flow-GRPO on chunked control and STOP.</p>
+    </div>
+    <figure class="plate" id="hero-plate" aria-labelledby="plate-cap">
+      <div class="plate__svg" data-mount="hero"></div>
+      <figcaption id="plate-cap" class="plate__cap">Schematic, not experimental data. The policy commits to eight controls (ticks) at each decision anchor (◇). Full-chunk BC drifts, crosses the goal region without stopping and flies on. Recovery training steers each chunk back toward the expert's future path and stops inside.</figcaption>
+    </figure>
+  </div>
+  <div class="wrap">
+    <dl class="readout" aria-label="Headline results">
+      <div class="readout__cell">
+        <dt>SR, test-seen</dt>
+        <dd><span class="readout__num" data-bind="value:grpo8.seen.SR">74.18</span><span class="readout__unit">%</span></dd>
+        <dd class="readout__src">Table 1, p.&nbsp;6 · k = 8</dd>
+      </div>
+      <div class="readout__cell">
+        <dt>SR, test-unseen</dt>
+        <dd><span class="readout__num" data-bind="value:grpo8.unseen.SR">51.73</span><span class="readout__unit">%</span></dd>
+        <dd class="readout__src">Table 1, p.&nbsp;6 · k = 8</dd>
+      </div>
+      <div class="readout__cell">
+        <dt>Model inference per waypoint</dt>
+        <dd><span class="readout__num">195 → 42</span><span class="readout__unit">ms</span></dd>
+        <dd class="readout__src">§4.1, p.&nbsp;5 · k = 1 → k = 8</dd>
+      </div>
+    </dl>
+  </div>
+</section>
+
+<!-- ============ VIDEO ============ -->
+<section class="section" id="video" aria-labelledby="video-title">
+  <div class="wrap">
+    <p class="eyebrow">Explainer · 57 s</p>
+    <h2 id="video-title" class="h2">The idea in under a minute</h2>
+    <div class="explainer">
+      <div class="explainer__frame"><iframe src="video/?embed=1" title="X-Fly explainer, 57 seconds, no audio" loading="lazy" allow="fullscreen"></iframe></div>
+      <div class="explainer__bar">
+        <p>Rendered live in your browser from HTML and JavaScript, no audio. Click to pause. Every number on screen comes from the paper.</p>
+        <a class="btn" href="video/">Open full screen</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DEMOS ============ -->
+<section class="section section--band" id="demos" aria-labelledby="demos-title">
+  <div class="wrap">
+    <p class="eyebrow">Closed-loop rollouts · test-unseen</p>
+    <h2 id="demos-title" class="h2">Held-out SmallCity routes, eight controls per decision</h2>
+    <p class="lede lede--narrow">Six routes from the held-out UE SmallCity split. Left: the expert's first-person view. Middle: X-Fly's own view, with the current 8-control chunk overlaid (green: executed, cyan: still to fly). Right: the expert (GT) and policy (PRED) paths from above.</p>
+    <div data-mount="demos"></div>
+    <p class="demo__note">Qualitative examples: successful episodes with a flown path over 30 m, rendered from a Flow-GRPO checkpoint during development, with a deterministic threshold on the smoothed stop probability. They illustrate behavior; the benchmark numbers on this page come from the paper's evaluation protocol (Table 1).</p>
+  </div>
+</section>
+
+<!-- ============ PROBLEM ============ -->
+<section class="section" id="problem" aria-labelledby="problem-title">
+  <div class="wrap">
+    <p class="eyebrow">Problem · the full-chunk support gap</p>
+    <h2 id="problem-title" class="h2">Eight controls between looks is cheap, and it opens a gap on two sides</h2>
+    <div class="cols">
+      <div class="prose">
+        <p>Aerial agents built on large vision-language models are expensive to query. Action-chunk policies predict several future controls per query, yet agents such as DreamFly execute only the first control and query again. Executing the complete chunk amortizes policy inference across its controls: for X-Fly, model inference drops from 195 to 42 ms per executed waypoint. The aircraft then flies eight controls before new visual feedback can correct it.</p>
+        <p>The states where the policy is next queried, its <em>decision anchors</em>, drift away from the expert trajectories. Expert-only data cover these learner-visited anchors poorly in two ways. No expert chunk starts at an off-route learner pose and returns it to the route: the <em>control gap</em>. Positive STOP labels come only from expert terminal windows, not from the anchor where the learner itself first enters the success region: the <em>termination gap</em>. Together they form the <em>full-chunk support gap</em> (§3.1, p.&nbsp;2).</p>
+        <p>On test-seen, switching BC from single-step to full-chunk execution drops SR from 46.57% to 16.45%, although navigation failures barely change. Reaching the goal is not the same as stopping there.</p>
+      </div>
+      <div class="widget" data-mount="chunk-cost"></div>
+    </div>
+    <div class="evidence" data-mount="bc-collapse"></div>
+  </div>
+</section>
+
+<!-- ============ INSIGHT ============ -->
+<section class="insight" aria-label="Insight">
+  <div class="wrap">
+    <p class="eyebrow">Insight</p>
+    <blockquote class="insight__quote">At the learner's own decision anchors, expert data are missing <mark>a chunk that steers back to the route</mark> and <mark>a label that says stop</mark>. Supply both where the learner actually is, then let same-task closed-loop outcomes decide when to stop.</blockquote>
+    <p class="insight__src">Paraphrasing §1 and §3.1, pp.&nbsp;1–2</p>
+  </div>
+</section>
+
+<!-- ============ METHOD ============ -->
+<section class="section" id="method" aria-labelledby="method-title">
+  <div class="wrap">
+    <p class="eyebrow">Method · a staged training framework</p>
+    <h2 id="method-title" class="h2">One policy backbone, trained in three stages</h2>
+    <p class="lede lede--narrow">Every stage trains the same modules: query banks, fusion, the flow controller and the STOP head, about 45M parameters. The Qwen3.5-4B VLM and its visual tower stay frozen throughout, and each stage starts from the previous one's policy.
+      <button class="linkbtn" type="button" data-figure="teaser_sr_cost">View Fig. 1, the accuracy–inference trade-off</button></p>
+    <ol class="stages" data-mount="stages">
+      <li class="stage">
+        <span class="stage__n">1</span>
+        <h3 class="stage__t">Multi-domain behavior cloning</h3>
+        <p>Rectified-flow controller and STOP head trained on <span data-bind="config.bcWindows">849,106</span> valid decision windows from OpenFly's UE, 3DGS and AirSim domains, for 10 epochs. STOP is supervised only at expert terminal windows.</p>
+        <p class="stage__src">§3.2, p.&nbsp;3 · Eq. 1 · Table 2, p.&nbsp;10</p>
+      </li>
+      <li class="stage">
+        <span class="stage__n">2</span>
+        <h3 class="stage__t">Recovery DAgger</h3>
+        <p>The learner flies with the deployed full-chunk executor in training scenes. Each anchor it visits gets a smooth chunk that rejoins the expert's future segment, and the first anchor inside the success region gets STOP. Three rounds, each warm-started from the previous one, mixing recovery and BC windows 1:1.</p>
+        <p class="stage__src">§3.3, p.&nbsp;3 · Eq. 2</p>
+      </li>
+      <li class="stage">
+        <span class="stage__n">3</span>
+        <h3 class="stage__t">Flow-GRPO</h3>
+        <p>Each update runs eight closed-loop attempts on each of 48 BigCity tasks, six free and two STOP-override attempts. A KL-regularized policy gradient over the free attempts refines chunked control and Bernoulli STOP together, and the override attempts add outcome-verified stopping pairs. 3000 updates.</p>
+        <p class="stage__src">§3.4, pp.&nbsp;4–5 · App. A.5, p.&nbsp;11</p>
+      </li>
+    </ol>
+
+    <div class="arch">
+      <div class="arch__head">
+        <h3 class="h3">Policy backbone</h3>
+      </div>
+      <div data-mount="arch"></div>
+      <p class="figsrc">Fig. 3 (p.&nbsp;4); block descriptions paraphrase §3.2 and App. A.2. Select the figure to enlarge it.
+        <button class="linkbtn" type="button" data-figure="mechanism_training">View Fig. 2, the support gap and training stages</button></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RECOVERY ============ -->
+<section class="section" id="recovery" aria-labelledby="recovery-title">
+  <div class="wrap">
+    <p class="eyebrow">Stage 2 · Recovery DAgger at learner-visited anchors</p>
+    <h2 id="recovery-title" class="h2">A label that starts where the drone is and rejoins the route ahead</h2>
+    <div class="cols cols--wide">
+      <div class="prose">
+        <p>Labels must follow demonstration order. A monotonic route cursor <var>c<sub>t</sub></var> advances at each collected decision by the number of controls actually executed, rather than searching forward along the reference for a match. It selects the expert pose <var>p*<sub>c<sub>t</sub></sub></var>, and the learner's offset <var>d<sub>t</sub></var> from that pose decays along a smoothstep:</p>
+        <div class="eq" data-mount="eq-recovery"></div>
+        <p>The target starts at the learner pose, decays with zero slope at both ends, and rejoins the future expert segment after one chunk. Yaw uses the same decaying offset, wrapped to the shortest signed angle. Recovery targets are built only during training; nothing extra runs at deployment.</p>
+        <p>In the figure, the gray learner flies full chunks and drifts off the route. Every anchor it visits gets its own label, which starts exactly at the learner and rejoins the expert route one chunk ahead; the first anchor inside the region gets STOP instead. Because the cursor only moves forward, a label never snaps to a stretch of route that has already been flown, even where the route passes near itself.</p>
+        <p>Collection runs with STOP disabled and is truncated at the first anchor inside the 20 m success region, which is labeled STOP with a hover target. Truncation also removes post-arrival anchors whose labels would point backward. Recovery thus adds STOP positives at the learner's own arrival anchors (<span data-bind="config.recoveryStops">8,404</span> in total), complementing the expert terminal windows used by BC.</p>
+        <p class="stage__src">§3.3, p.&nbsp;3 · Eq. 2 · App. A.4, p.&nbsp;11</p>
+      </div>
+      <div class="widget widget--lab" data-mount="recovery-lab"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ GRPO ============ -->
+<section class="section" id="grpo" aria-labelledby="grpo-title">
+  <div class="wrap">
+    <p class="eyebrow">Stage 3 · Flow-GRPO on chunked control and STOP</p>
+    <h2 id="grpo-title" class="h2">Explore in smooth modes, compare attempts on the same task</h2>
+    <p class="lede lede--narrow">A policy-gradient update needs a likelihood, and a deterministic flow ODE has none. During training X-Fly makes the last three of six Euler steps stochastic. The noise lives in a low-frequency temporal basis, so sampled chunks stay smooth, and a small complement keeps the covariance full rank, so each transition has a closed-form log-density over the whole 8 × 4 chunk. Deployment keeps the deterministic six-step solver.</p>
+    <div class="grid2">
+      <div class="widget" data-mount="noise-lab"></div>
+      <div class="widget" data-mount="group-lab"></div>
+    </div>
+    <div class="objective">
+      <h3 class="h3">One shared advantage for control and STOP</h3>
+      <div class="eq eq--wide" data-mount="eq-actor"></div>
+      <p class="prose-sm">The control term scores the stochastic denoising transitions at tail steps <var>s</var> ∈ {3, 4, 5}; the STOP term is the Bernoulli log-probability of the sampled STOP or CONTINUE at the training temperature 1.5. Both KL terms pull toward the frozen initial policy with β = 0.01. Free attempts often stop at similar depths, so two attempts per group override their first <var>n</var> ∈ {1, 2, 3} sampled STOPs and fly on. Their returns enter the group statistics, but their decisions get no policy gradient; instead they supply outcome-verified STOP pairs for a margin-ranking and BCE loss with weight 0.5. STOP is legal from the second decision, and nothing after a STOP receives credit.</p>
+      <p class="stage__src">§3.4, pp.&nbsp;4–5 · Eqs. 3–6 · App. A.5, pp.&nbsp;11–12</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RESULTS ============ -->
+<section class="section section--band" id="results" aria-labelledby="results-title">
+  <div class="wrap">
+    <p class="eyebrow">Evidence</p>
+    <h2 id="results-title" class="h2">Results on OpenFly test-seen and test-unseen</h2>
+    <div class="protocol">
+      <p><strong>Protocol.</strong> DreamFly-processed OpenFly splits: test-seen has 1,392 trajectories (UE BigCity and six AirSim cities), test-unseen has 404 (held-out UE SmallCity). An episode succeeds if its final position lies within 20 m of the goal. Every X-Fly row uses one rule: STOP ~ Bernoulli(σ(ℓ)) at unit temperature, a 128-control cap, and metrics computed exactly over the first-stop distribution. Prior rows are published results with their native stopping policies, so the X-Fly-to-X-Fly comparisons are the matched ones. <var>k</var> is the number of controls executed per fused-policy decision. Differences are in percentage points (pp).</p>
+      <p class="stage__src">§4.1, p.&nbsp;5 · Table 1 caption, p.&nbsp;6 · App. A.6, p.&nbsp;12</p>
+    </div>
+
+    <ul class="findings" data-mount="findings"></ul>
+
+    <article class="panel" aria-labelledby="t1-title">
+      <header class="panel__head">
+        <div>
+          <h3 class="h3" id="t1-title">Benchmark comparison</h3>
+          <p class="panel__sub" data-mount="t1-sub"></p>
+        </div>
+        <div class="panel__controls" data-mount="t1-controls"></div>
+      </header>
+      <div data-mount="t1"></div>
+      <p class="figsrc">Source: Table 1, p.&nbsp;6. All 12 rows, in the paper's order. Bars start at zero.</p>
+    </article>
+
+    <article class="panel" aria-labelledby="ladder-title">
+      <header class="panel__head">
+        <div>
+          <h3 class="h3" id="ladder-title">What each stage adds, at k = 1 and k = 8</h3>
+          <p class="panel__sub">Matched X-Fly rows only. One policy backbone, one evaluation protocol.</p>
+        </div>
+        <div class="panel__controls" data-mount="ladder-controls"></div>
+      </header>
+      <div data-mount="ladder"></div>
+      <p class="figsrc">Source: Table 1, p.&nbsp;6, and §4.3, pp.&nbsp;5–6. Flow-GRPO is trained and evaluated at k = 8 only.
+        <button class="linkbtn" type="button" data-figure="teaser_sr_cost">View Fig. 1</button></p>
+    </article>
+
+    <article class="panel" aria-labelledby="attr-title">
+      <header class="panel__head">
+        <div>
+          <h3 class="h3" id="attr-title">What each stage repairs</h3>
+          <p class="panel__sub">Each first-stop outcome is one of two success types or exactly one failure, on the same rollouts as Table 1. Shares are expectations under the first-stop distribution and sum to 100.</p>
+        </div>
+        <div class="panel__controls" data-mount="attr-controls"></div>
+      </header>
+      <div data-mount="attr"></div>
+      <p class="figsrc">Source: Table 3, p.&nbsp;13, the data behind Fig. 4 (p.&nbsp;7); rule in App. C. <b>Success, no STOP</b>: inside the region at the control budget. <b>Early</b> / <b>Late</b>: STOP outside the region before / after the first in-region anchor. <b>No stop</b>: reaches the region, never stops, ends outside it. <b>Navigation</b>: no in-region anchor even with STOP disabled.
+        <button class="linkbtn" type="button" data-figure="failure_transition">View the original Fig. 4</button></p>
+    </article>
+
+    <article class="panel" aria-labelledby="dyn-title">
+      <header class="panel__head">
+        <div>
+          <h3 class="h3" id="dyn-title">Flow-GRPO from recovered vs. BC initialization</h3>
+          <p class="panel__sub">Source-validation curves, raw values every 20 updates. A different protocol from Table 1: 384 BigCity routes excluded from Flow-GRPO updates, fixed seeds, one sampled STOP rollout per route. Compare the two runs with each other, not with Table 1.</p>
+        </div>
+        <div class="panel__controls" data-mount="dyn-controls"></div>
+      </header>
+      <div data-mount="dyn"></div>
+      <p class="figsrc">Source: §4.4, p.&nbsp;7, and the data behind Fig. 5 (p.&nbsp;8). The BC-initialized run was stopped at 680 updates as its OSR and NE kept degrading. Validation points interrupted by renderer failures were evaluated from the saved checkpoints with the same panel and seeds (App. A.7, p.&nbsp;12).
+        <button class="linkbtn" type="button" data-figure="grpo_dynamics_merged">View the original Fig. 5</button></p>
+    </article>
+  </div>
+</section>
+
+<!-- ============ LIMITS ============ -->
+<section class="section" id="limits" aria-labelledby="limits-title">
+  <div class="wrap">
+    <p class="eyebrow">Limits</p>
+    <h2 id="limits-title" class="h2">Stopping on time is the remaining bottleneck</h2>
+    <div class="cols">
+      <div class="prose">
+        <p>With STOP disabled, the final policy visits an in-region anchor in <span data-bind="reach.seen">93.41</span>% of test-seen and <span data-bind="reach.unseen">88.61</span>% of test-unseen episodes, but converts only <span data-bind="value:grpo8.seen.SR">74.18</span>% and <span data-bind="value:grpo8.unseen.SR">51.73</span>% into success. On test-unseen, dense reach exceeds anchor reach by only <span data-bind="reach.between">0.75</span> points, so the remaining gap to SR lies mainly in stop timing at anchors the policy does visit.</p>
+        <p>Flow-GRPO shifts stops later: late stops rise to <span data-bind="share:grpo8.seen.late">9.89</span>% on test-seen and <span data-bind="share:grpo8.unseen.late">15.84</span>% on test-unseen, slightly more common than early stops on test-seen.</p>
+        <p>Each training configuration uses one training seed, so these results do not measure training-seed variance. OpenFly does not capture real aircraft dynamics, sensing noise, or operational safety constraints; transfer to physical platforms requires separate validation.</p>
+        <p class="stage__src">§5, p.&nbsp;7 · §4.3, p.&nbsp;6</p>
+      </div>
+      <div class="widget" data-mount="stop-gap"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TEAM ============ -->
+<section class="section section--band" id="team" aria-labelledby="team-title">
+  <div class="wrap">
+    <p class="eyebrow">Team · paper · citation</p>
+    <h2 id="team-title" class="h2">Contributors</h2>
+    <div class="team__grid">
+      <div class="team__role"><h3>Advisor</h3><ul><li>Lin Wang</li></ul></div>
+      <div class="team__role"><h3>Core Contributor</h3><ul><li>Ruibin Ju<sup>*</sup></li></ul></div>
+      <div class="team__role"><h3>Contributors</h3><ul><li>Ruifeng Cai</li><li>Min Xu</li></ul></div>
+    </div>
+    <p class="team__org"><svg class="brand-mark" viewBox="0 0 22 37" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><defs><clipPath id="bm-c3"><rect x="2" y="2" width="18" height="33"/></clipPath></defs><g clip-path="url(#bm-c3)"><path d="M-2.628 41L22.028 -5"/><path d="M24.456 7L13.2 28H24" stroke-linejoin="miter"/></g><rect x="1" y="1" width="20" height="35"/></svg>ARIDGE · XPENG &nbsp;·&nbsp; <sup>*</sup>Corresponding author: <a href="mailto:jurb@aridge.com">jurb@aridge.com</a></p>
+    <h3 class="h3">Citation</h3>
+    <div class="cite">
+      <pre id="bib">@article{ju2026xfly,
+  title   = {X-Fly: Learning to Reach and Stop in Full-Chunk Aerial Vision-Language Navigation},
+  author  = {Ju, Ruibin and Cai, Ruifeng and Xu, Min and Wang, Lin},
+  journal = {arXiv preprint},
+  year    = {2026}
+}</pre>
+      <button class="btn" type="button" id="bib-copy">Copy</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot__grid">
+    <p><span class="foot__brand">X-FLY</span> · ARIDGE · XPENG</p>
+    <p>Every number on this page comes from the X-Fly arXiv preprint and is labeled with its page, table or equation. Training curves are drawn from the data behind Fig. 5. Schematic figures are marked as schematic. Page content © 2026 the X-Fly authors; site code under the MIT License.</p>
+  </div>
+</footer>
+
+<dialog class="figdlg" id="figdlg" aria-labelledby="figdlg-title">
+  <form method="dialog" class="figdlg__bar">
+    <h2 class="figdlg__title" id="figdlg-title"></h2>
+    <button class="btn" value="close">Close</button>
+  </form>
+  <img id="figdlg-img" alt="">
+  <p class="figdlg__cap" id="figdlg-cap"></p>
+</dialog>
+<div class="tip" id="tip" role="tooltip" hidden></div>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

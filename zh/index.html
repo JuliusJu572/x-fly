@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>X-Fly：整块执行的空中视觉语言导航中，学会到达与停止</title>
+<meta name="description" content="X-Fly 是面向整块执行空中视觉语言导航的分阶段训练框架：多域行为克隆、在学习者访问锚点上的 Recovery DAgger，以及对整块控制与 STOP 的 Flow-GRPO。每次决策执行 8 个控制，OpenFly test-seen SR 74.18%，test-unseen 51.73%。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="X-Fly: Learning to Reach and Stop in Full-Chunk Aerial VLN">
+<meta property="og:description" content="整块执行空中 VLN 的分阶段训练。OpenFly test-seen / test-unseen SR 74.18% / 51.73%，每航点模型推理减少 4.7×。">
+<meta property="og:image" content="https://juliusju572.github.io/x-fly/assets/rollouts/water_tower_140m.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="alternate" hreflang="en" href="https://juliusju572.github.io/x-fly/">
+<link rel="alternate" hreflang="zh" href="https://juliusju572.github.io/x-fly/zh/">
+<link rel="icon" href="../assets/brand/aridge_mark.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/tokens.css">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/sections.css">
+<link rel="stylesheet" href="../css/charts.css">
+<link rel="stylesheet" href="../css/widgets.css">
+</head>
+<body>
+<a class="skip" href="#main">跳到正文</a>
+
+<header class="nav" id="nav">
+  <a class="nav__brand" href="#top" aria-label="X-Fly，回到顶部">
+    <svg class="brand-mark" viewBox="0 0 22 37" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><defs><clipPath id="bm-c"><rect x="2" y="2" width="18" height="33"/></clipPath></defs><g clip-path="url(#bm-c)"><path d="M-2.628 41L22.028 -5"/><path d="M24.456 7L13.2 28H24" stroke-linejoin="miter"/></g><rect x="1" y="1" width="20" height="35"/></svg>
+    <span>X-FLY</span><span class="brand-sep" aria-hidden="true"></span><span class="brand-org">ARIDGE · XPENG</span>
+  </a>
+  <nav class="route" aria-label="章节">
+    <ol>
+      <li><a href="#demos" data-spy="demos"><span class="wp" aria-hidden="true"></span>演示</a></li>
+      <li><a href="#problem" data-spy="problem"><span class="wp" aria-hidden="true"></span>问题</a></li>
+      <li><a href="#method" data-spy="method"><span class="wp" aria-hidden="true"></span>方法</a></li>
+      <li><a href="#recovery" data-spy="recovery"><span class="wp" aria-hidden="true"></span>Recovery</a></li>
+      <li><a href="#grpo" data-spy="grpo"><span class="wp" aria-hidden="true"></span>Flow-GRPO</a></li>
+      <li><a href="#results" data-spy="results"><span class="wp" aria-hidden="true"></span>结果</a></li>
+      <li><a href="#limits" data-spy="limits"><span class="wp" aria-hidden="true"></span>局限</a></li>
+      <li><a href="#team" data-spy="team"><span class="wp" aria-hidden="true"></span>团队</a></li>
+    </ol>
+  </nav>
+  <a class="lang-btn" href="../" hreflang="en" lang="en" data-lang-link aria-label="Switch to English"><span>EN</span><span aria-current="true" lang="zh">中文</span></a>
+</header>
+
+<main id="main">
+<!-- ============ HERO ============ -->
+<section class="hero" id="top" aria-labelledby="hero-title">
+  <div class="wrap hero__grid">
+    <div class="hero__text">
+      <p class="eyebrow">空中视觉语言导航 · <span data-bind="paper.venue">arXiv 预印本</span></p>
+      <h1 id="hero-title" class="display">
+        <span class="display__name">X-Fly</span>
+        <span class="display__title">在整块执行的空中视觉语言导航中，学会到达与停止</span>
+      </h1>
+      <p class="authors"><span>Ruibin Ju<sup>*</sup></span><span>Ruifeng Cai</span><span>Min Xu</span><span>Lin Wang</span></p>
+      <p class="affil"><svg class="brand-mark" viewBox="0 0 22 37" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><defs><clipPath id="bm-c2"><rect x="2" y="2" width="18" height="33"/></clipPath></defs><g clip-path="url(#bm-c2)"><path d="M-2.628 41L22.028 -5"/><path d="M24.456 7L13.2 28H24" stroke-linejoin="miter"/></g><rect x="1" y="1" width="20" height="35"/></svg>ARIDGE · XPENG</p>
+      <div class="hero__cta">
+        <a class="btn btn--solid" href="../assets/paper/x-fly.pdf"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 1.5h5.5L13 5v9.5H4z M9.5 1.5V5H13" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>论文 (PDF)</a>
+        <a class="btn" href="#" aria-disabled="true" title="arXiv 链接将在发布后补上">arXiv · 即将上线</a>
+        <a class="btn" href="#video">讲解动画</a>
+        <a class="btn" href="#demos">闭环演示</a>
+      </div>
+      <p class="lede">整块执行 8 个控制，把每航点模型推理从 195 ms 降到 42 ms，却让策略落在专家示范覆盖很差的决策状态上。X-Fly 分三阶段训练：多域行为克隆、在学习者访问锚点上的 Recovery DAgger，以及对整块控制与 STOP 的 Flow-GRPO。</p>
+    </div>
+    <figure class="plate" id="hero-plate" aria-labelledby="plate-cap">
+      <div class="plate__svg" data-mount="hero"></div>
+      <figcaption id="plate-cap" class="plate__cap">示意图，非实验数据。策略在每个决策锚点 (◇) 一次性提交 8 个控制（刻度）。整块执行的 BC 逐渐漂移，穿过目标区域却不停，继续往前飞。Recovery 训练让每个 chunk 都朝专家后续路径收回，并在区域内停下。</figcaption>
+    </figure>
+  </div>
+  <div class="wrap">
+    <dl class="readout" aria-label="核心结果">
+      <div class="readout__cell">
+        <dt>SR, test-seen</dt>
+        <dd><span class="readout__num" data-bind="value:grpo8.seen.SR">74.18</span><span class="readout__unit">%</span></dd>
+        <dd class="readout__src">表 1，第 6 页 · k = 8</dd>
+      </div>
+      <div class="readout__cell">
+        <dt>SR, test-unseen</dt>
+        <dd><span class="readout__num" data-bind="value:grpo8.unseen.SR">51.73</span><span class="readout__unit">%</span></dd>
+        <dd class="readout__src">表 1，第 6 页 · k = 8</dd>
+      </div>
+      <div class="readout__cell">
+        <dt>每航点模型推理时间</dt>
+        <dd><span class="readout__num">195 → 42</span><span class="readout__unit">ms</span></dd>
+        <dd class="readout__src">§4.1，第 5 页 · k = 1 → k = 8</dd>
+      </div>
+    </dl>
+  </div>
+</section>
+
+<!-- ============ VIDEO ============ -->
+<section class="section" id="video" aria-labelledby="video-title">
+  <div class="wrap">
+    <p class="eyebrow">讲解动画 · 57 秒</p>
+    <h2 id="video-title" class="h2">一分钟看懂 X-Fly</h2>
+    <div class="explainer">
+      <div class="explainer__frame"><iframe src="../video/?embed=1" title="X-Fly 讲解动画，57 秒，无声音" loading="lazy" allow="fullscreen"></iframe></div>
+      <div class="explainer__bar">
+        <p>由 HTML 与 JavaScript 在浏览器中实时渲染，无声音，画面文字为英文。点击可暂停。画面中的每个数字都来自论文。</p>
+        <a class="btn" href="../video/">全屏打开</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DEMOS ============ -->
+<section class="section section--band" id="demos" aria-labelledby="demos-title">
+  <div class="wrap">
+    <p class="eyebrow">闭环演示 · test-unseen</p>
+    <h2 id="demos-title" class="h2">未见过的 SmallCity 航线，每次决策执行 8 个控制</h2>
+    <p class="lede lede--narrow">6 条来自留出的 UE SmallCity 测试集的航线。左：专家的第一人称视角。中：X-Fly 自己的视角，叠加了当前 8 步控制块（绿色为已执行，青色为待执行）。右：专家 (GT) 与策略 (PRED) 轨迹的俯视对比。</p>
+    <div data-mount="demos"></div>
+    <p class="demo__note">定性示例：选取实际飞行路径超过 30 m 的成功 episode，由开发过程中的一个 Flow-GRPO checkpoint 渲染，停止判定为平滑后停止概率上的确定性阈值。它们用于展示行为；本页的基准数字均来自论文的评测协议（表 1）。</p>
+  </div>
+</section>
+
+<!-- ============ PROBLEM ============ -->
+<section class="section" id="problem" aria-labelledby="problem-title">
+  <div class="wrap">
+    <p class="eyebrow">问题 · 整块执行的支撑缺口</p>
+    <h2 id="problem-title" class="h2">两次“看”之间飞 8 步很省算力，却在两侧打开了缺口</h2>
+    <div class="cols">
+      <div class="prose">
+        <p>基于大型视觉语言模型的空中智能体，每次查询都很昂贵。动作块策略每次查询预测多个未来控制，但 DreamFly 等智能体只执行第一个控制就重新查询。整块执行能把推理开销摊到整块控制上：对 X-Fly 而言，每个已执行航点的模型推理从 195 ms 降到 42 ms。代价是飞行器要连飞 8 步，新的视觉反馈才能纠正它。</p>
+        <p>策略下一次被查询的状态，即<em>决策锚点</em>，会偏离专家轨迹。纯专家数据对这些学习者访问到的锚点覆盖很差，体现在两方面：没有任何专家 chunk 从偏离航线的学习者位姿出发、把它带回航线，这是<em>控制缺口</em>；STOP 正样本只来自专家的终点窗口，而不是学习者自己首次进入成功区域的那个锚点，这是<em>终止缺口</em>。两者合起来就是<em>整块执行的支撑缺口</em>（§3.1，第 2 页）。</p>
+        <p>在 test-seen 上，把 BC 从单步执行改为整块执行，SR 从 46.57% 跌到 16.45%，而导航失败几乎不变。到达目标，不等于在目标处停下。</p>
+      </div>
+      <div class="widget" data-mount="chunk-cost"></div>
+    </div>
+    <div class="evidence" data-mount="bc-collapse"></div>
+  </div>
+</section>
+
+<!-- ============ INSIGHT ============ -->
+<section class="insight" aria-label="洞察">
+  <div class="wrap">
+    <p class="eyebrow">洞察</p>
+    <blockquote class="insight__quote">在学习者自己的决策锚点上，专家数据缺少<mark>一个把它带回航线的 chunk</mark>，也缺少<mark>一个告诉它该停的标签</mark>。在学习者真正所在的位置补上这两样，再让同任务的闭环结果决定何时停下。</blockquote>
+    <p class="insight__src">转述自 §1 与 §3.1，第 1–2 页</p>
+  </div>
+</section>
+
+<!-- ============ METHOD ============ -->
+<section class="section" id="method" aria-labelledby="method-title">
+  <div class="wrap">
+    <p class="eyebrow">方法 · 分阶段训练框架</p>
+    <h2 id="method-title" class="h2">同一个策略骨干，分三个阶段训练</h2>
+    <p class="lede lede--narrow">每个阶段训练的都是同一组模块：查询组、融合层、flow 控制器和 STOP 头，合计约 45M 参数。Qwen3.5-4B VLM 及其视觉塔全程冻结，每个阶段都从上一阶段的策略开始。
+      <button class="linkbtn" type="button" data-figure="teaser_sr_cost">查看图 1：精度与推理代价的权衡</button></p>
+    <ol class="stages" data-mount="stages">
+      <li class="stage">
+        <span class="stage__n">1</span>
+        <h3 class="stage__t">多域行为克隆</h3>
+        <p>在 OpenFly 的 UE、3DGS 与 AirSim 三个域共 <span data-bind="config.bcWindows">849,106</span> 个有效决策窗口上训练 rectified-flow 控制器与 STOP 头，共 10 个 epoch。STOP 只在专家终点窗口上监督。</p>
+        <p class="stage__src">§3.2，第 3 页 · 式 1 · 表 2，第 10 页</p>
+      </li>
+      <li class="stage">
+        <span class="stage__n">2</span>
+        <h3 class="stage__t">Recovery DAgger</h3>
+        <p>学习者在训练场景中用部署时的整块执行器飞行。它访问的每个锚点都被标上一个平滑 chunk，回到专家的后续路段；第一个进入成功区域的锚点标为 STOP。共三轮，每轮从上一轮热启动，recovery 窗口与 BC 窗口按 1:1 混合。</p>
+        <p class="stage__src">§3.3，第 3 页 · 式 2</p>
+      </li>
+      <li class="stage">
+        <span class="stage__n">3</span>
+        <h3 class="stage__t">Flow-GRPO</h3>
+        <p>每次更新在 48 个 BigCity 任务上各跑 8 次闭环尝试：6 次自由尝试，2 次 STOP-override 尝试。对自由尝试做带 KL 正则的策略梯度，同时优化整块控制与 Bernoulli STOP；override 尝试额外提供经结果验证的停止样本对。共 3000 次更新。</p>
+        <p class="stage__src">§3.4，第 4–5 页 · 附录 A.5，第 11 页</p>
+      </li>
+    </ol>
+
+    <div class="arch">
+      <div class="arch__head">
+        <h3 class="h3">策略骨干</h3>
+      </div>
+      <div data-mount="arch"></div>
+      <p class="figsrc">图 3（第 4 页）；各模块说明转述自 §3.2 与附录 A.2。点击图片可放大。
+        <button class="linkbtn" type="button" data-figure="mechanism_training">查看图 2：支撑缺口与训练阶段</button></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RECOVERY ============ -->
+<section class="section" id="recovery" aria-labelledby="recovery-title">
+  <div class="wrap">
+    <p class="eyebrow">阶段 2 · 在学习者访问的锚点上做 Recovery DAgger</p>
+    <h2 id="recovery-title" class="h2">从无人机当前位置出发、在前方回到航线的标签</h2>
+    <div class="cols cols--wide">
+      <div class="prose">
+        <p>标签必须遵循示范的先后顺序。单调路线游标 <var>c<sub>t</sub></var> 在每次采集的决策中按实际执行的控制数前进，而不是沿参考路线向前搜索匹配点。它选出专家位姿 <var>p*<sub>c<sub>t</sub></sub></var>，学习者相对该位姿的偏移 <var>d<sub>t</sub></var> 按 smoothstep 衰减：</p>
+        <div class="eq" data-mount="eq-recovery"></div>
+        <p>目标从学习者位姿出发，两端斜率为零地衰减，在一个 chunk 之后回到专家的后续路段。偏航角使用同样的衰减偏移，并折算到最短有符号角。Recovery 目标只在训练时构造，部署时不增加任何计算。</p>
+        <p>图中灰色的学习者以整块方式飞行，逐渐偏离航线。它访问的每个锚点都有自己的标签：从学习者位置出发，在一个 chunk 之后回到专家航线；第一个进入区域的锚点则标为 STOP。由于游标只会向前，即使航线自身相互靠近，标签也不会吸附到已经飞过的路段。</p>
+        <p>采集时禁用 STOP，并在第一个进入 20 m 成功区域的锚点处截断，该锚点标为 STOP 并配悬停目标。截断也去掉了到达之后、标签会指向后方的锚点。于是 Recovery 在学习者自己的到达锚点上补充了 STOP 正样本（共 <span data-bind="config.recoveryStops">8,404</span> 个），与 BC 使用的专家终点窗口互补。</p>
+        <p class="stage__src">§3.3，第 3 页 · 式 2 · 附录 A.4，第 11 页</p>
+      </div>
+      <div class="widget widget--lab" data-mount="recovery-lab"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ GRPO ============ -->
+<section class="section" id="grpo" aria-labelledby="grpo-title">
+  <div class="wrap">
+    <p class="eyebrow">阶段 3 · 对整块控制与 STOP 做 Flow-GRPO</p>
+    <h2 id="grpo-title" class="h2">在平滑模态中探索，在同一任务内比较尝试</h2>
+    <p class="lede lede--narrow">策略梯度更新需要似然，而确定性的 flow ODE 没有似然。训练时 X-Fly 把 6 步 Euler 中的最后 3 步改为随机。噪声放在低频时间基上，采样出的 chunk 依然平滑；一小部分补空间噪声让协方差保持满秩，因此每次转移在整个 8 × 4 chunk 上都有闭式对数密度。部署时仍使用确定性的 6 步求解器。</p>
+    <div class="grid2">
+      <div class="widget" data-mount="noise-lab"></div>
+      <div class="widget" data-mount="group-lab"></div>
+    </div>
+    <div class="objective">
+      <h3 class="h3">控制与 STOP 共用同一个优势</h3>
+      <div class="eq eq--wide" data-mount="eq-actor"></div>
+      <p class="prose-sm">控制项为尾部随机去噪步 <var>s</var> ∈ {3, 4, 5} 的转移打分；STOP 项是训练温度 1.5 下所采样 STOP 或 CONTINUE 的 Bernoulli 对数概率。两个 KL 项都以 β = 0.01 拉向冻结的初始策略。自由尝试往往在相近的深度停止，因此每组有两次尝试会把前 <var>n</var> ∈ {1, 2, 3} 次采样到的 STOP 改为继续飞。它们的回报参与组内统计，但其决策不接收策略梯度；它们提供经结果验证的 STOP 样本对，用于权重 0.5 的 margin-ranking 与 BCE 损失。STOP 从第二次决策起才合法，STOP 之后的决策不分配信用。</p>
+      <p class="stage__src">§3.4，第 4–5 页 · 式 3–6 · 附录 A.5，第 11–12 页</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RESULTS ============ -->
+<section class="section section--band" id="results" aria-labelledby="results-title">
+  <div class="wrap">
+    <p class="eyebrow">实验证据</p>
+    <h2 id="results-title" class="h2">OpenFly test-seen 与 test-unseen 上的结果</h2>
+    <div class="protocol">
+      <p><strong>评测协议。</strong>使用 DreamFly 处理后的 OpenFly 划分：test-seen 含 1,392 条轨迹（UE BigCity 与 6 个 AirSim 城市），test-unseen 含 404 条（留出的 UE SmallCity）。最终位置距目标 20 m 以内即为成功。所有 X-Fly 行使用同一规则：单位温度的 STOP ~ Bernoulli(σ(ℓ))、128 步控制上限，指标在首次停止分布上精确求期望。已有方法的行是其已发表结果，使用各自的原生停止策略，因此 X-Fly 行之间的比较才是严格对齐的。<var>k</var> 为每次融合策略决策执行的控制数。差值单位为百分点 (pp)。</p>
+      <p class="stage__src">§4.1，第 5 页 · 表 1 标题，第 6 页 · 附录 A.6，第 12 页</p>
+    </div>
+
+    <ul class="findings" data-mount="findings"></ul>
+
+    <article class="panel" aria-labelledby="t1-title">
+      <header class="panel__head">
+        <div>
+          <h3 class="h3" id="t1-title">基准对比</h3>
+          <p class="panel__sub" data-mount="t1-sub"></p>
+        </div>
+        <div class="panel__controls" data-mount="t1-controls"></div>
+      </header>
+      <div data-mount="t1"></div>
+      <p class="figsrc">来源：表 1，第 6 页。按论文顺序列出全部 12 行，柱条从 0 起。</p>
+    </article>
+
+    <article class="panel" aria-labelledby="ladder-title">
+      <header class="panel__head">
+        <div>
+          <h3 class="h3" id="ladder-title">各阶段在 k = 1 与 k = 8 下的增益</h3>
+          <p class="panel__sub">只含对齐的 X-Fly 行：同一策略骨干、同一评测协议。</p>
+        </div>
+        <div class="panel__controls" data-mount="ladder-controls"></div>
+      </header>
+      <div data-mount="ladder"></div>
+      <p class="figsrc">来源：表 1，第 6 页；§4.3，第 5–6 页。Flow-GRPO 只在 k = 8 下训练和评测。
+        <button class="linkbtn" type="button" data-figure="teaser_sr_cost">查看图 1</button></p>
+    </article>
+
+    <article class="panel" aria-labelledby="attr-title">
+      <header class="panel__head">
+        <div>
+          <h3 class="h3" id="attr-title">各阶段修复了什么</h3>
+          <p class="panel__sub">在与表 1 相同的轨迹上，每个首次停止结果归入两类成功之一，或恰好一类失败。各项为首次停止分布下的期望，合计 100。</p>
+        </div>
+        <div class="panel__controls" data-mount="attr-controls"></div>
+      </header>
+      <div data-mount="attr"></div>
+      <p class="figsrc">来源：表 3，第 13 页，即图 4（第 7 页）的数据；判定规则见附录 C。<b>成功（未 STOP）</b>：控制预算耗尽时恰在区域内。<b>过早</b> / <b>过晚</b>：在首个区域内锚点之前 / 之后、于区域外 STOP。<b>未停止</b>：到达过区域，但从未停止，最终在区域外。<b>导航失败</b>：即使禁用 STOP，也没有锚点进入区域。
+        <button class="linkbtn" type="button" data-figure="failure_transition">查看原图 4</button></p>
+    </article>
+
+    <article class="panel" aria-labelledby="dyn-title">
+      <header class="panel__head">
+        <div>
+          <h3 class="h3" id="dyn-title">从 Recovery 初始化与从 BC 初始化的 Flow-GRPO</h3>
+          <p class="panel__sub">源域验证曲线，每 20 次更新一个原始数值。协议与表 1 不同：384 条不参与 Flow-GRPO 更新的 BigCity 航线、固定种子、每条航线一次 STOP 采样。请在两条曲线之间比较，不要与表 1 比较。</p>
+        </div>
+        <div class="panel__controls" data-mount="dyn-controls"></div>
+      </header>
+      <div data-mount="dyn"></div>
+      <p class="figsrc">来源：§4.4，第 7 页，及图 5（第 8 页）的数据。BC 初始化的训练因 OSR 与 NE 持续变差，在 680 次更新时停止。因渲染器故障中断的验证点，事后用保存的 checkpoint 以相同航线与种子补评（附录 A.7，第 12 页）。
+        <button class="linkbtn" type="button" data-figure="grpo_dynamics_merged">查看原图 5</button></p>
+    </article>
+  </div>
+</section>
+
+<!-- ============ LIMITS ============ -->
+<section class="section" id="limits" aria-labelledby="limits-title">
+  <div class="wrap">
+    <p class="eyebrow">局限</p>
+    <h2 id="limits-title" class="h2">准时停下，是剩下的主要瓶颈</h2>
+    <div class="cols">
+      <div class="prose">
+        <p>禁用 STOP 时，最终策略在 <span data-bind="reach.seen">93.41</span>% 的 test-seen 与 <span data-bind="reach.unseen">88.61</span>% 的 test-unseen episode 中访问到了区域内锚点，但只有 <span data-bind="value:grpo8.seen.SR">74.18</span>% 与 <span data-bind="value:grpo8.unseen.SR">51.73</span>% 转化为成功。在 test-unseen 上，密集到达率只比锚点到达率高 <span data-bind="reach.between">0.75</span> 个百分点，因此与 SR 之间剩下的差距主要在于：策略确实到过的锚点上，停得不是时候。</p>
+        <p>Flow-GRPO 让停止整体后移：过晚停止在 test-seen 上升至 <span data-bind="share:grpo8.seen.late">9.89</span>%，在 test-unseen 上升至 <span data-bind="share:grpo8.unseen.late">15.84</span>%；在 test-seen 上已略多于过早停止。</p>
+        <p>每个训练配置只用了一个训练种子，因此这些结果没有衡量训练种子带来的方差。OpenFly 不包含真实的飞行器动力学、传感噪声与运行安全约束，迁移到真实平台需要另行验证。</p>
+        <p class="stage__src">§5，第 7 页 · §4.3，第 6 页</p>
+      </div>
+      <div class="widget" data-mount="stop-gap"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TEAM ============ -->
+<section class="section section--band" id="team" aria-labelledby="team-title">
+  <div class="wrap">
+    <p class="eyebrow">团队 · 论文 · 引用</p>
+    <h2 id="team-title" class="h2">贡献者</h2>
+    <div class="team__grid">
+      <div class="team__role"><h3>指导 · Advisor</h3><ul><li>Lin Wang</li></ul></div>
+      <div class="team__role"><h3>核心贡献 · Core Contributor</h3><ul><li>Ruibin Ju<sup>*</sup></li></ul></div>
+      <div class="team__role"><h3>贡献者 · Contributors</h3><ul><li>Ruifeng Cai</li><li>Min Xu</li></ul></div>
+    </div>
+    <p class="team__org"><svg class="brand-mark" viewBox="0 0 22 37" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><defs><clipPath id="bm-c3"><rect x="2" y="2" width="18" height="33"/></clipPath></defs><g clip-path="url(#bm-c3)"><path d="M-2.628 41L22.028 -5"/><path d="M24.456 7L13.2 28H24" stroke-linejoin="miter"/></g><rect x="1" y="1" width="20" height="35"/></svg>ARIDGE · XPENG &nbsp;·&nbsp; <sup>*</sup>通讯作者： <a href="mailto:jurb@aridge.com">jurb@aridge.com</a></p>
+    <h3 class="h3">引用</h3>
+    <div class="cite">
+      <pre id="bib">@article{ju2026xfly,
+  title   = {X-Fly: Learning to Reach and Stop in Full-Chunk Aerial Vision-Language Navigation},
+  author  = {Ju, Ruibin and Cai, Ruifeng and Xu, Min and Wang, Lin},
+  journal = {arXiv preprint},
+  year    = {2026}
+}</pre>
+      <button class="btn" type="button" id="bib-copy">复制</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot__grid">
+    <p><span class="foot__brand">X-FLY</span> · ARIDGE · XPENG</p>
+    <p>本页每个数字都来自 X-Fly 的 arXiv 预印本，并标注了页码、表格或公式。训练曲线取自图 5 的原始数据，示意图均已标注为示意。页面内容 © 2026 X-Fly 作者；网站代码采用 MIT 许可证。</p>
+  </div>
+</footer>
+
+<dialog class="figdlg" id="figdlg" aria-labelledby="figdlg-title">
+  <form method="dialog" class="figdlg__bar">
+    <h2 class="figdlg__title" id="figdlg-title"></h2>
+    <button class="btn" value="close">关闭</button>
+  </form>
+  <img id="figdlg-img" alt="">
+  <p class="figdlg__cap" id="figdlg-cap"></p>
+</dialog>
+<div class="tip" id="tip" role="tooltip" hidden></div>
+<script type="module" src="../js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+/* Design tokens. Palette is drawn from aeronautical sectional charts, set on white:
+   navy ink, airway blue for the expert route, and the magenta those charts reserve
+   for flight-relevant boundaries, used here for the learner and the final XFly result.
+   Chart hues validated with the dataviz validator against the white surface. */
+:root {
+  --paper: #FFFFFF;
+  --surface: #FFFFFF;
+  --band: #F4F7F9;
+  --band-2: #EEF2F6;
+  --ink: #0F1B2D;
+  --ink-2: #44546A;
+  --ink-3: #5C6B80;
+  --rule: #DDE3EA;
+  --rule-2: #BAC6D2;
+  --contour: #E3E9EE;
+
+  --expert: #2F5BD3;
+  --learner: #C2187A;
+  --amber: #B7791F;
+  --teal: #00866A;
+  --violet: #7A4FC9;
+  --seg-ink-light: #FFFFFF;
+  --seg-ink-dark: #0F1B2D;
+  --muted-mark: #9AA8B8;
+  --muted-mark-2: #C3CCD6;
+  --pos: #2F5BD3;
+  --neg: #B7791F;
+
+  --magenta-ink: #A3125F;
+  --tint-learner: rgba(194, 24, 122, 0.08);
+  --tint-expert: rgba(47, 91, 211, 0.08);
+
+  --f-display: 'Archivo', 'Arial Narrow', system-ui, sans-serif;
+  --f-body: 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --f-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  --wrap: 1200px;
+  --gutter: clamp(16px, 4vw, 40px);
+  --radius: 6px;
+  --shadow: 0 1px 0 rgba(15, 27, 45, 0.03), 0 10px 28px -16px rgba(15, 27, 45, 0.16);
+  --ease: cubic-bezier(0.2, 0.7, 0.1, 1);
+  color-scheme: light;
+}
+
+/* Chinese pages: CJK body face, and no condensed stretch on Han glyphs. */
+:root:lang(zh) {
+  --f-display: 'Archivo', 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+  --f-body: 'Archivo', 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', 'Microsoft YaHei', system-ui, sans-serif;
+}

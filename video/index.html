@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>X-Fly Explainer</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="frame" style="position:relative;overflow:hidden">
+    <div id="viewport"><div id="stage" role="img" aria-label="X-Fly research explainer animation"></div></div>
+  </div>
+  <div id="controls">
+    <button id="play" type="button" aria-pressed="false">Play</button>
+    <button id="restart" type="button">Restart</button>
+    <input id="scrub" type="range" min="0" step="0.0333" value="0" aria-label="Timeline">
+    <span id="time">0:00.0</span>
+    <span>Chapters</span><span id="chapters" style="display:flex;gap:6px"></span>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/core.js"></script>
+  <script src="js/scenes/v1_hook.js"></script>
+  <script src="js/scenes/v2_gap.js"></script>
+  <script src="js/scenes/v3_recovery.js"></script>
+  <script src="js/scenes/v4_grpo.js"></script>
+  <script src="js/scenes/v5_results.js"></script>
+  <script src="js/scenes/v6_close.js"></script>
+  <script src="js/scenes/v7_credits.js"></script>
+  <script src="js/player.js"></script>
+</body>
+</html>
