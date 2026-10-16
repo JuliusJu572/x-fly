@@ -9,8 +9,8 @@
 ARIDGE, XPENG &nbsp;·&nbsp; <sup>\*</sup>通讯作者：jurb@aridge.com
 
 [![项目主页](https://img.shields.io/badge/%E9%A1%B9%E7%9B%AE-%E4%B8%BB%E9%A1%B5-C2187A?style=flat-square)](https://juliusju572.github.io/x-fly/zh/)
-[![论文](https://img.shields.io/badge/%E8%AE%BA%E6%96%87-PDF-0F1B2D?style=flat-square)](assets/paper/x-fly.pdf)
-[![arXiv](https://img.shields.io/badge/arXiv-%E5%8D%B3%E5%B0%86%E4%B8%8A%E7%BA%BF-B31B1B?style=flat-square)](#引用)
+[![论文](https://img.shields.io/badge/%E8%AE%BA%E6%96%87-PDF-0F1B2D?style=flat-square)](https://arxiv.org/pdf/2610.21450)
+[![arXiv](https://img.shields.io/badge/arXiv-2610.21450-B31B1B?style=flat-square)](https://arxiv.org/abs/2610.21450)
 [![License: MIT](https://img.shields.io/badge/License-MIT-2F5BD3?style=flat-square)](LICENSE)
 
 [English](README.md) · **简体中文**
@@ -102,7 +102,7 @@ OpenFly test-seen（1,392 条轨迹）与 test-unseen（404 条，留出的 UE S
 
 ## 贡献者
 
-| 指导 · Advisor | 核心贡献 · Core Contributor | 贡献者 · Contributors |
+| 指导 · Advisor | 核心贡献者 · Core Contributor | 贡献者 · Contributors |
 |:---:|:---:|:---:|
 | Lin Wang | Ruibin Ju | Ruifeng Cai, Min Xu |
 
@@ -112,11 +112,12 @@ OpenFly test-seen（1,392 条轨迹）与 test-unseen（404 条，留出的 UE S
 @article{ju2026xfly,
   title   = {X-Fly: Learning to Reach and Stop in Full-Chunk Aerial Vision-Language Navigation},
   author  = {Ju, Ruibin and Cai, Ruifeng and Xu, Min and Wang, Lin},
-  journal = {arXiv preprint},
-  year    = {2026}
+  journal = {arXiv preprint arXiv:2610.21450},
+  year    = {2026},
+  url     = {https://arxiv.org/abs/2610.21450}
 }
 ```
 
 ## 关于本仓库
 
-本仓库存放 X-Fly 的公开项目主页与对外披露材料：网站（由 GitHub Pages 托管）、讲解动画、演示视频、论文图表与论文 PDF，不包含任何训练或评测代码。网站代码以 [MIT 许可证](LICENSE) 发布；论文、图表与媒体内容 © 2026 X-Fly 作者。
+本仓库存放 X-Fly 的公开项目主页与对外披露材料：网站（由 GitHub Pages 托管）、讲解动画、演示视频与论文图表；论文本身见 arXiv（[2610.21450](https://arxiv.org/abs/2610.21450)）。不包含任何训练或评测代码。网站代码以 [MIT 许可证](LICENSE) 发布；论文、图表与媒体内容 © 2026 X-Fly 作者。

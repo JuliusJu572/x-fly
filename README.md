@@ -9,8 +9,8 @@
 ARIDGE, XPENG &nbsp;·&nbsp; <sup>\*</sup>Corresponding author: jurb@aridge.com
 
 [![Project page](https://img.shields.io/badge/Project-Page-C2187A?style=flat-square)](https://juliusju572.github.io/x-fly/)
-[![Paper](https://img.shields.io/badge/Paper-PDF-0F1B2D?style=flat-square)](assets/paper/x-fly.pdf)
-[![arXiv](https://img.shields.io/badge/arXiv-coming%20soon-B31B1B?style=flat-square)](#citation)
+[![Paper](https://img.shields.io/badge/Paper-PDF-0F1B2D?style=flat-square)](https://arxiv.org/pdf/2610.21450)
+[![arXiv](https://img.shields.io/badge/arXiv-2610.21450-B31B1B?style=flat-square)](https://arxiv.org/abs/2610.21450)
 [![License: MIT](https://img.shields.io/badge/License-MIT-2F5BD3?style=flat-square)](LICENSE)
 
 **English** · [简体中文](README.zh-CN.md)
@@ -112,11 +112,12 @@ The [project page](https://juliusju572.github.io/x-fly/#demos) plays these as vi
 @article{ju2026xfly,
   title   = {X-Fly: Learning to Reach and Stop in Full-Chunk Aerial Vision-Language Navigation},
   author  = {Ju, Ruibin and Cai, Ruifeng and Xu, Min and Wang, Lin},
-  journal = {arXiv preprint},
-  year    = {2026}
+  journal = {arXiv preprint arXiv:2610.21450},
+  year    = {2026},
+  url     = {https://arxiv.org/abs/2610.21450}
 }
 ```
 
 ## About this repository
 
-This repository hosts the public project page and disclosure material for X-Fly: the website (served by GitHub Pages), the explainer animation, rollout media, figures and the paper PDF. It does not contain training or evaluation code. The website code is released under the [MIT License](LICENSE); the paper, figures and media are © 2026 the X-Fly authors.
+This repository hosts the public project page and disclosure material for X-Fly: the website (served by GitHub Pages), the explainer animation, rollout media and figures; the paper itself is on arXiv ([2610.21450](https://arxiv.org/abs/2610.21450)). It does not contain training or evaluation code. The website code is released under the [MIT License](LICENSE); the paper, figures and media are © 2026 the X-Fly authors.

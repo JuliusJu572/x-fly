@@ -1,5 +1,5 @@
 // Single source of truth for every number on the page.
-// Source: the arXiv preprint (paper/main.tex, 13 pp. incl. appendix). `src` strings point to the
+// Source: arXiv:2610.21450v1 (paper/main.tex, 13 pp. incl. appendix). `src` strings point to the
 // PDF page / table / equation. Derived values (deltas, sums) are computed in code from these
 // rows, never typed by hand.
 import { t } from '../lib/i18n.js';
@@ -7,7 +7,8 @@ import { t } from '../lib/i18n.js';
 export const paper = {
   name: 'X-Fly',
   title: 'X-Fly: Learning to Reach and Stop in Full-Chunk Aerial Vision-Language Navigation',
-  venue: t('arXiv preprint', 'arXiv 预印本'),
+  venue: 'arXiv:2610.21450',
+  arxiv: 'https://arxiv.org/abs/2610.21450',
   org: 'ARIDGE, XPENG',
 };
 

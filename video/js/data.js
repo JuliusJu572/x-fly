@@ -1,11 +1,11 @@
-// Every number shown in the video lives here, with its source in paper/main.tex (named arXiv preprint, checked 2026-10-15).
+// Every number shown in the video lives here, with its source in paper/main.tex (arXiv:2610.21450v1, checked 2026-10-16).
 // Derived values (deltas, ratios) are computed in XF.derive, never typed by hand.
 window.XF = window.XF || {};
 
 XF.data = {
   paper: {
     title: "X-Fly: Learning to Reach and Stop in Full-Chunk Aerial Vision-Language Navigation",
-    venue: "arXiv preprint",
+    venue: "arXiv:2610.21450",
     authors: "Ruibin Ju et al.",
     affiliation: "ARIDGE, XPENG",
   },

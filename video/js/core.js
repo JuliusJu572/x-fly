@@ -118,7 +118,7 @@ XF.u = (() => {
   };
   const source = (root, text) => el("div", { class: "src" }, root, text);
   const badge = (root, kind) => {
-    const text = { schematic: "Schematic · illustrative", paper: "Paper data", figure: "Paper figure", route: "Real expert route", preprint: "arXiv preprint" }[kind];
+    const text = { schematic: "Schematic · illustrative", paper: "Paper data", figure: "Paper figure", route: "Real expert route", preprint: "arXiv:2610.21450" }[kind];
     return el("div", { class: `badge ${kind}` }, root, text);
   };
 
